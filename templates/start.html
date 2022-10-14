@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grades</title>
+</head>
+<body>
+    <div class="grid-2">
+
+        <div class="section-1">
+            <center><h2>Welcome IT/CS Fam</h2></center>
+            <center><p>Please fill in the grades on the fields.</p></center>
+            <center><p>These fields will be used by the system to compute the GPA.</p></center>
+            <br>
+            <br>
+
+            <form method="POST" action="/dashboard_student/start">
+                <label class="custom-field two">
+                    <select name="CC101" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Computer Programming I</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="CC102" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Computer Programming II</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="ITC" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Introduction to Computing</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="IM" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Information Management</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="OOP" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Object Oriented Programming</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="HCI" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Human Computer Interaction</span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label class="custom-field two">
+                    <select name="DSA" required>
+                        <option selected value=""> </option>
+                        <option value="1"> 1 </option>
+                        <option value="1.25"> 1.25 </option>
+                        <option value="1.5"> 1.5 </option>
+                        <option value="1.75"> 1.75 </option>
+                        <option value="2"> 2 </option>
+                        <option value="2.25"> 2.25 </option>
+                        <option value="2.5"> 2.5 </option>
+                        <option value="2.75"> 2.75 </option>
+                        <option value="3"> 3 </option>
+                        <option value="5"> 5 </option>
+                    </select>
+                    <span class="placeholder">Data Structure and Algorithms</span>
+                </label>
+                
+                <br>
+                <br>
+                <br>
+                <button type="submit" name="submit" class="glow-on-hover" >SUBMIT</button>
+                <br>
+                <br>
+                <br>
+            </form>
+            
+        
+            <br>
+            <br>
+
+        </div>
+        
+        <div class="section-2">
+            <h2>Purpose of this system:</h2>
+            <p> This system will predict the main software engineering role as well as the secondary software engineering role of a student studying at Western Mindanao State University-College of Computing Studies.
+                Furthermore, this system will also allow instructors to generate a group of students who are taking the software engineering course.
+            </p>
+            <h2>Process:</h2>
+            <ol>
+                <li>The system will then request the student to input their grades in respective major courses.It will then output the GPA of the student.</li>
+                <li>The system will now ask the students to take the MBTI personality type test.It will then output the personality type test which is based on MBTI.</li>
+                <li>The system will now ask the students to take the multiple intelligence test.It will then output the result.</li>
+                <li>The system will fetch the necessary data which includes the GPA, the personality type of the student, and the multiple intelligence test result. After that, the student will then select his/her course skill, and finally the system will process the inputted data and outputs the predicted main and secondary role.</li>
+            </ol>
+
+            <h2>Software Engineering Roles:</h2>
+            <ul>
+                <li>Project Manager</li>
+                <li>Lead Programmer</li>
+                <li>UI/UX Designer</li>
+                <li>Business Analyst</li>
+                <li>Quality Assurance Engineer</li>
+            </ul>    
+        </div>
+        
+    </div>   
+</body>
+</html>
+<style>
+/* global */
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+.grid-2{
+    display: grid;
+    grid-template-columns: repeat(2,2fr);
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #081c15;
+    color: white;
+
+
+}
+
+.glow-on-hover {
+    width: 220px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.glow-on-hover:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.glow-on-hover:active {
+    color: #000
+}
+
+.glow-on-hover:active:after {
+    background: transparent;
+}
+
+.glow-on-hover:hover:before {
+    opacity: 1;
+}
+
+.glow-on-hover:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+
+
+.section-1{
+    padding: 25px;
+    text-align: center;
+}
+.section-2{
+    padding: 25px;
+    text-align: center;
+}
+
+h2 {
+    display: block;
+    font-size: 2.0em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+
+h2,.white{
+    color: #fff;
+}
+
+a{
+    color: #7A7C80;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+ul{
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 2;
+}
+
+
+.white:hover{
+    position: relative;
+    padding-left: 10px;
+}
+/*CUSTOM FIELD */
+*, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  .custom-field {
+    position: relative;
+    font-size: 14px;
+    border-top: 20px solid transparent;
+    margin-bottom: 5px;
+    --field-padding: 12px;
+  }
+  
+  .custom-field select {
+    border: none;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #f2f2f2;
+    padding: var(--field-padding);
+    border-radius: 3px;
+    width: 300px;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .custom-field .placeholder {
+    position: absolute;
+    left: var(--field-padding);
+    width: calc(100% - (var(--field-padding) * 2));
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    top: 10px;
+    line-height: 100%;
+    transform: translateY(-50%);
+    color: #aaa;
+    transition: 
+      top 0.3s ease,
+      color 0.3s ease,
+      font-size 0.3s ease;
+  }
+  
+  .custom-field select.dirty + .placeholder,
+  .custom-field select:focus + .placeholder,
+  .custom-field select:not(:placeholder-shown) + .placeholder {
+    top: -25px;
+    font-size: 14px;
+    color: #fff;
+  }
+  
+  .custom-field .error-message {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 12px;
+    background: #d30909;
+    color: #fff;
+    height: 24px;
+  }
+  
+  .custom-field .error-message:empty {
+    opacity: 0;
+  }
+/* TWO */
+.custom-field.two select {
+    border-radius: 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background:
+      linear-gradient(90deg, #222, #222) center bottom/0 0.15em no-repeat,
+      linear-gradient(90deg, #ccc, #ccc) left bottom/100% 0.15em no-repeat,
+      linear-gradient(90deg, #fafafa, #fafafa) left bottom/100% no-repeat;
+    transition: background-size 0.3s ease;
+  }
+  
+  .custom-field.two select.dirty,
+  .custom-field.two select:not(:placeholder-shown),
+  .custom-field.two select:focus {
+    background-size: 100% 0.15em, 100% 0.1em, 100%;
+  }
+
+/* media queres */
+@media(max-width:780px){
+    .grid-2{
+        grid-template-columns: 1fr;
+    }
+}
+</style>
