@@ -42,11 +42,38 @@ def login():
 
                 cursor.execute('SELECT * FROM predict WHERE userID = % s', (user['id'], ))
                 record = cursor.fetchone()
+                
                 if record:
                     has_record = True
+                    m_prediction = record['MAIN_ROLE']
+                    s_prediction = record['SECOND_ROLE']
+
+                    if m_prediction == 0:
+                        m_prediction = 'Lead Programmer'
+                    elif m_prediction == 1:
+                        m_prediction = 'Project Manager'
+                    elif m_prediction == 2:
+                        m_prediction = 'UI/UX Designer'
+                    elif m_prediction == 3:
+                        m_prediction = 'Quality Assurance Engineer'
+                    elif m_prediction == 4:
+                        m_prediction = 'Business Analyst'
+                    
+                    if s_prediction == 0:
+                        s_prediction = 'Lead Programmer'
+                    elif s_prediction == 1:
+                        s_prediction = 'Project Manager'
+                    elif s_prediction == 2:
+                        s_prediction = 'UI/UX Designer'
+                    elif s_prediction == 3:
+                        s_prediction = 'Quality Assurance Engineer'
+                    elif s_prediction == 4:
+                        s_prediction = 'Business Analyst'
+                    elif s_prediction == 5:
+                        s_prediction = 'NONE'
                 else:
                     has_record = False
-                return render_template('dashboard_student.html', mesage = mesage, has_record=has_record)
+                return render_template('dashboard_student.html', mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
             elif user['userType'] == 'teacher':
                 mesage = 'Teacher module is not yet implemented!!'
                 return render_template('index.html', mesage = mesage) 
