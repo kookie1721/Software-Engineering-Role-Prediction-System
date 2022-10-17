@@ -20,11 +20,13 @@
     <div class="grid-2">
         <div class="section-1">
             {% if has_record is defined and has_record %}
-            <p style="font-size: 18px;color: red;" >Hello there! {{session.firstName}} {{session.lastName}}, you have already predicted your Main and Secondary Software Engineering Roles!</p>
-            <p style="font-size: 18px;color: red;" >Main Role: {{main_role}}</p>
-            <p style="font-size: 18px;color: red;" >Secondary Role: {{second_role}}</p>
+            <p style="font-size: 18px;color: yellow;" >Hello there! {{session.firstName}} {{session.lastName}}, you have already predicted your Main and Secondary Software Engineering Roles!</p>
+            <p style="font-size: 18px;color: yellow;" >Main Role: {{main_role}}</p>
+            <p style="font-size: 18px;color: yellow;" >Secondary Role: {{second_role}}</p>
             {% elif session['has_record'] is defined and session['has_record'] %}
-            <p style="font-size: 18px;color: red;" >Hello there! {{session.firstName}} {{session.lastName}}, you have already predicted your Main and Secondary Software Engineering Roles!</p>
+            <p style="font-size: 18px;color: yellow;" >Hello there! {{session.firstName}} {{session.lastName}}, you have already predicted your Main and Secondary Software Engineering Roles!</p>
+            <p style="font-size: 18px;color: yellow;" >Main Role: {{session['main_role']}}</p>
+            <p style="font-size: 18px;color: yellow;" >Secondary Role: {{session['second_role']}}</p>
             {% endif %}
             <!-- <i class="fas fa-code fa-5x white"></i> -->
             <img src="../static/main_logo.png" width="490" height="480">

@@ -71,9 +71,10 @@ def login():
                         s_prediction = 'Business Analyst'
                     elif s_prediction == 5:
                         s_prediction = 'NONE'
+                    return render_template('dashboard_student.html', mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
                 else:
                     has_record = False
-                return render_template('dashboard_student.html', mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
+                    return render_template('dashboard_student.html', mesage = mesage, has_record=has_record)
             elif user['userType'] == 'teacher':
                 mesage = 'Teacher module is not yet implemented!!'
                 return render_template('index.html', mesage = mesage) 
@@ -394,6 +395,8 @@ def result_predict():
         record = cursor.fetchone()
         if record:
             session['has_record'] = True
+            session['main_role'] = m_prediction
+            session['second_role'] = s_prediction
         else:
             session['has_record'] = False
 
