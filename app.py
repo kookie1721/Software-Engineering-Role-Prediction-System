@@ -76,8 +76,15 @@ def login():
                     has_record = False
                     return render_template('dashboard_student.html', mesage = mesage, has_record=has_record)
             elif user['userType'] == 'teacher':
-                mesage = 'Teacher module is not yet implemented!!'
-                return render_template('index.html', mesage = mesage) 
+                session['loggedin'] = True
+                session['userid'] = user['id']
+                session['lastName'] = user['lastName']
+                session['firstName'] = user['firstName']
+                session['email'] = user['email']
+                session['program'] = user['program']
+                mesage = 'Logged in successfully !'
+
+                return render_template('dashboard_teacher.html', mesage = mesage) 
         else:
             mesage = 'Email or Password is incorrect!'
     return render_template('index.html', mesage = mesage)
@@ -405,6 +412,12 @@ def result_predict():
 
     return render_template('result_predict.html', m_prediction = m_prediction, s_prediction = s_prediction)
 
+
+@app.route('/dashboard_teacher')
+def dashboard_teacher():
+    return render_template('dashboard_teacher.html')
+
+
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
@@ -435,9 +448,15 @@ def register():
         elif not firstName or not lastName or not userType or not password or not email:
             mesage = 'Please fill out the form !'
         else:
-            cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, session['section'], session['program'],))
-            mysql.connection.commit()
-            mesage = 'You have successfully registered!'
+            if(userType == 'student'):
+                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, session['section'], session['program'],))
+                mysql.connection.commit()
+                mesage = 'You have successfully registered!'
+            else:
+                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, "none", "none",))
+                mysql.connection.commit()
+                mesage = 'You have successfully registered!'
+
     elif request.method == 'POST':
         mesage = 'Please fill out the form !'
     return render_template('register.html', mesage = mesage)
