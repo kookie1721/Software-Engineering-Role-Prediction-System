@@ -21,7 +21,7 @@ app.config['MYSQL_DB'] = 'thesis_db'
 mysql = MySQL(app)
 
 @app.route('/')
-@app.route('/login', methods =['GET', 'POST'])
+@app.route('/Home', methods =['GET', 'POST'])
 def login():
     mesage = ''
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
@@ -412,11 +412,20 @@ def result_predict():
 
     return render_template('result_predict.html', m_prediction = m_prediction, s_prediction = s_prediction)
 
-
 @app.route('/dashboard_teacher')
 def dashboard_teacher():
     return render_template('dashboard_teacher.html')
 
+@app.route('/groupings')
+def groupings():
+    return render_template('groupings.html')
+
+@app.route('/student_records')
+def student_records():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    result = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id")
+    student = cursor.fetchall()
+    return render_template('student_records.html', student=student)
 
 @app.route('/logout')
 def logout():

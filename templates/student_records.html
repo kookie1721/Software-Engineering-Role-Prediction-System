@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <script src="{{ url_for('static', filename='js/sweet_alert.js') }} "></script>
-    <title>Home</title>
+    <title>Student Records</title>
 
 </head>
 <body>
@@ -24,12 +24,12 @@
         <div class="sidebar-menu">
         <ul>    
                 <li>
-                    <a class="active"><span class="las la-users"></span>
+                    <a href="{{ url_for('dashboard_teacher') }}"><span class="las la-users"></span>
                     <span>Dashboard</span></a>
                 </li>
 
                 <li>
-                    <a href="{{ url_for('student_records') }}"><span class="las la-users"></span>
+                    <a class="active"><span class="las la-users"></span>
                     <span>Student Records</span></a>
                 </li>
 
@@ -54,7 +54,7 @@
                 <label for="nav-toggle">
                     <span class="las la-bars"></span>
                 </label>
-                Dashboard
+                Student Records
             </h2>
         </header>
 
@@ -65,7 +65,65 @@
 
         <main>
            <div class="container">
-            <h4>Welcome user!</h4>
+            <div class="table-responsive">
+                    <table id="data_table" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Section</th>
+                                <th>Program</th>
+                                <th>Main Role</th>
+                                <th>Secondary Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in student %}
+                            <tr>
+                                <td> {{row.firstName}}</td>
+                                <td> {{row.lastName}} </td>
+                                <td> {{row.section}} </td>
+                                <td> {{row.program}} </td>
+
+                                {% if row.MAIN_ROLE == 0%}
+                                <td> Lead Programmer </td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 1%}
+                                <td> Project Manager </td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 2%}
+                                <td> UI/UX Designer </td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 3%}
+                                <td> QA Engineer </td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 4%}
+                                <td> Business Analyst </td>
+                                {% endif %}
+                               
+                                {% if row.SECOND_ROLE == 0%}
+                                <td> Lead Programmer </td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 1%}
+                                <td> Project Manager </td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 2%}
+                                <td> UI/UX Designer </td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 3%}
+                                <td> QA Engineer </td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 4%}
+                                <td> Business Analyst </td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 5%}
+                                <td> None </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
            </div>
         </main>
     </div>
