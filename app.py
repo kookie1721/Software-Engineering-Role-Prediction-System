@@ -9,7 +9,7 @@ import datetime
 
 
 app = Flask(__name__)
-dtc_model = pickle.load(open('final_model.pkl','rb'))
+dtc_model = pickle.load(open('main_final_model.pkl','rb'))
 dtc_second_model = pickle.load(open('second_final_model.pkl','rb'))
 
 app.secret_key = 'markies1'
