@@ -95,6 +95,68 @@ def dashboard_student():
     return render_template('dashboard_student.html')
 
 @app.route('/dashboard_student/start', methods =['GET', 'POST'])
+def repredict():
+
+    #still not done here.
+
+    GPA = 0
+    mesage = ''
+    if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form :
+        CC101 = request.form['CC101']
+        CC102 = request.form['CC102']
+        ITC = request.form['ITC']
+        IM = request.form['IM']
+        OOP = request.form['OOP']
+        HCI = request.form['HCI']
+        DSA = request.form['DSA']
+
+        CC101_units = (float(CC101) * 4)
+        CC102_units = (float(CC102) * 4)
+        ITC_units = (float(ITC) * 3)
+        IM_units = (float(IM) * 4)
+        OOP_units = (float(OOP) * 4)
+        HCI_units = (float(HCI) * 1)
+        DSA_units = (float(DSA) * 4)
+
+        total_units = 24
+
+        # multiplying the grades with the units of each subject and getting the sum of the multiple grades
+        # to calculate the GPA.
+
+        final_grade = (float(CC101) * 4) + (float(CC102) * 4) + (float(ITC) * 3) + (float(IM) * 4) + (float(OOP) * 4) + (float(HCI) * 1) + (float(DSA) * 4)
+        
+
+        #Dividing the final grade with the total units to generate the GPA.
+        GPA = float(final_grade) / int(total_units)
+        final_GPA = round(GPA, 2)
+
+        #calculating the average grade for the programming subjects
+        prog_avg = (float(CC101) + float(CC102) + float(IM) + float(OOP)) / 4
+        final_prog_avg = round(prog_avg, 2)
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT program FROM users WHERE id = % s', (session['userid'],))
+        program = cursor.fetchone()
+
+        if program['program'] == 'BSIT':
+            f_program = 0
+        elif program['program'] == 'BSCS':
+            f_program = 1
+
+        if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form:
+             cursor.execute('INSERT INTO predict (userID, program, comprog1, comprog2, intro_computing, IM, OOP, HCI, DSA, comprog1_units, comprog2_units, intro_computing_units, IM_units, OOP_units, HCI_units, DSA_units, programming_avg, gpa) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s )', (session['userid'], f_program, CC101, CC102, ITC, IM, OOP, HCI, DSA, CC101_units, CC102_units, ITC_units, IM_units, OOP_units, HCI_units, DSA_units, final_prog_avg, final_GPA, ))
+             mysql.connection.commit()
+             return render_template('result_gpa.html', GPA=final_GPA)
+        else:
+            mesage = 'Something went wrong!'
+            return render_template('result_gpa.html', mesage=mesage)
+
+    elif request.method == 'POST':
+        mesage = 'something went wrong!'
+    return render_template('start.html', mesage=mesage)
+
+
+@app.route('/dashboard_student/start', methods =['GET', 'POST'])
 def start():
     GPA = 0
     mesage = ''
