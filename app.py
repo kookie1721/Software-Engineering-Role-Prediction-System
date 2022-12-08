@@ -223,10 +223,10 @@ def pt():
             cursor.execute('UPDATE predict SET INTJ = % s WHERE userID = % s', (INTJ, session['userid'], ))
             mysql.connection.commit()
             return render_template('result_pt.html', pt=personality_type)
-        elif personality_type == 'INFP':
-            INFP = 1
+        elif personality_type == 'INTP':
+            INTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('UPDATE predict SET INFP = % s WHERE userID = % s', (INFP, session['userid'], ))
+            cursor.execute('UPDATE predict SET INTP = % s WHERE userID = % s', (INTP, session['userid'], ))
             mysql.connection.commit()
             return render_template('result_pt.html', pt=personality_type)
         elif personality_type == 'ISFJ':
@@ -416,14 +416,5001 @@ def result_predict():
 def dashboard_teacher():
     return render_template('dashboard_teacher.html')
 
-@app.route('/groupings')
-def groupings():
-    return render_template('groupings.html')
+@app.route('/groupings_CS', methods =['GET', 'POST'])
+def groupings_CS():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    sections_CS = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSCS';")
+    sections_CS = cursor.fetchall()
+
+    result1 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' ORDER BY predict.id DESC")
+    students_BSCS3A = cursor.fetchall()
+
+    result2 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' ORDER BY predict.id DESC")
+    students_BSCS3B = cursor.fetchall()
+
+    result3 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' ORDER BY predict.id DESC")
+    students_BSCS3C = cursor.fetchall()
+
+    result4 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' ORDER BY predict.id DESC")
+    students_BSCS3D = cursor.fetchall()
+
+    result9 = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
+    students_all = cursor.fetchall()
+    if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
+        group_size = int(request.form['s_groupSize'])
+        program = request.form['program']
+        section = request.form['section']
+
+        if program == 'BSCS' and section == '3A':
+
+            if result1 == 0:
+                mes_no_studs = "There are no students in this program and section (BSCS-3A) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSCS3A_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSCS3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSCS3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSCS3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        #BSCS 3B
+        elif program == 'BSCS' and section == '3B':
+            if result2 == 0:
+                mes_no_studs = "There are no students in this program and section (BSCS-3B) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSCS3B_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSCS3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSCS3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3B) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSCS3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3B) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        #BSCS 3C
+        elif program == 'BSCS' and section == '3C':
+            if result3 == 0:
+                mes_no_studs = "There are no students in this program and section (BSCS-3C) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSCS3C_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSCS3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSCS3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSCS3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSCS3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+    return render_template('groupings_CS.html', students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+@app.route('/groupings_IT', methods =['GET', 'POST'])
+def groupings_IT():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    sections_IT = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSIT';")
+    sections_IT = cursor.fetchall()
+
+    result5 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' ORDER BY predict.id DESC")
+    students_BSIT3A = cursor.fetchall()
+
+    result6 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' ORDER BY predict.id DESC")
+    students_BSIT3B = cursor.fetchall()
+
+    result7 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' ORDER BY predict.id DESC")
+    students_BSIT3C = cursor.fetchall()
+
+    result8 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' ORDER BY predict.id DESC")
+    students_BSIT3D = cursor.fetchall()
+
+    result9 = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
+    students_all = cursor.fetchall()
+
+    if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
+        group_size = int(request.form['s_groupSize'])
+        program = request.form['program']
+        section = request.form['section']
+
+        if program == 'BSIT' and section == '3A':
+
+            if result5 == 0:
+                mes_no_studs = "There are no students in this program and section (BSIT-3A) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSIT3A_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSIT3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSIT3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSIT3A)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3A) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        #BSIT 3B
+        elif program == 'BSIT' and section == '3B':
+            if result6 == 0:
+                mes_no_studs = "There are no students in this program and section (BSIT-3B) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSIT3B_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSIT3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3B) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSIT3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3B) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSIT3B)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3B) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        #BSIT 3C
+        elif program == 'BSIT' and section == '3C':
+            if result7 == 0:
+                mes_no_studs = "There are no students in this program and section (BSIT-3C) or they might not have predicted their main and secondary roles yet!"
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+            result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+            students_BSIT3C_check = cursor.fetchall()
+
+            if result_check == 0:
+                mes_no_studs = "Students in this program and section have already been grouped."
+                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+            else:
+                if group_size == 3:
+                    no_of_groups = round(int(len(students_BSIT3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student3_remain = cursor.fetchone()
+
+                                    if student3_remain:
+                                        student3_remain_id = student3_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                #When the selected group size is 4
+                elif group_size == 4:
+                    no_of_groups = round(int(len(students_BSIT3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+                            
+
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student4_remain = cursor.fetchone()
+
+                                    if student4_remain:
+                                        student4_remain_id = student4_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+                #When the selected group size is 5
+                elif group_size == 5:
+                    no_of_groups = round(int(len(students_BSIT3C)/group_size))
+                    group_iterator = 0
+                    group_iterator_inner = 0
+                    result1_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none'")
+                    student_LP_a = cursor.fetchall()
+                    
+                    result2_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none'")
+                    student_PM_a = cursor.fetchall() 
+
+                    result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_a = cursor.fetchall()
+
+                    result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
+                    student_QA_a = cursor.fetchall()
+
+                    result5_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '4' and predict._group = 'none'")
+                    student_BA_a = cursor.fetchall()
+
+                    result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
+                    student_LP_s_a = cursor.fetchall()
+                    
+                    result2_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none'")
+                    student_PM_s_a = cursor.fetchall()
+                    
+                    result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
+                    student_UI_UX_s_a = cursor.fetchall()
+
+                    result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
+                    student_QA_s_a = cursor.fetchall()
+
+                    result5_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '4' and predict._group = 'none'")
+                    student_BA_s_a = cursor.fetchall()
+
+                    if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups and result5_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                            
+                            result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP = cursor.fetchone()
+                            
+                            result2 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM = cursor.fetchone() 
+
+                            result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX = cursor.fetchone()
+
+                            result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA = cursor.fetchone()
+
+                            result5 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.MAIN_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP:
+                                student_LP_id = student_LP['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM:
+                                student_PM_id = student_PM['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id)))        
+                                mysql.connection.commit()
+            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX:
+                                student_UI_UX_id = student_UI_UX['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA:
+                                student_QA_id = student_QA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA:
+                                student_BA_id = student_BA['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1
+                    elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
+                        while no_of_groups > 0:
+                            group_iterator = group_iterator + 1
+                            result0 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' LIMIT 1")
+                            student_gen = cursor.fetchone()
+                    
+                            result1_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '0' and predict._group = 'none' LIMIT 1")
+                            student_LP_s = cursor.fetchone()
+                            
+                            result2_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '1' and predict._group = 'none' LIMIT 1")
+                            student_PM_s = cursor.fetchone()
+                            
+                            result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
+                            student_UI_UX_s = cursor.fetchone()
+
+                            result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
+                            student_QA_s = cursor.fetchone()
+
+                            result5_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict.SECOND_ROLE = '4' and predict._group = 'none' LIMIT 1")
+                            student_BA_s = cursor.fetchone()
+                            
+                            #Lead programmer
+                            if student_LP_s:
+                                student_LP_id_s = student_LP_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_LP_id_s)))        
+                                mysql.connection.commit()
+                        
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #Project Manager 
+                            if student_PM_s:
+                                student_PM_id_s = student_PM_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_PM_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #UI/UX Designer
+                            if student_UI_UX_s:
+                                student_UI_UX_id_s = student_UI_UX_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_UI_UX_id_s)))        
+                                mysql.connection.commit()
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #QA Engineer
+                            if student_QA_s:
+                                student_QA_id_s = student_QA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_QA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+                            
+                            #BA
+                            if student_BA_s:
+                                student_BA_id_s = student_BA_s['id']
+                                cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student_BA_id_s)))        
+                                mysql.connection.commit()
+                            
+                            else:
+                                mes='unexpected error occured!'
+
+                            no_of_groups = no_of_groups - 1     
+                    else:
+                        mes="dasdsadsad"
+                        remain_students = int(len(students_BSIT3C) % group_size)
+                        if remain_students == 0:
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                                
+                                no_of_groups = no_of_groups - 1    
+                        else:
+                            mes="pass me cok"
+                            no_of_groups_inner = no_of_groups
+                            while no_of_groups > 0:
+                                group_iterator = group_iterator + 1
+                                while no_of_groups_inner > 0:
+                                    group_iterator_inner = group_iterator_inner + 1
+                                    mes = 'pass'
+                                    result1 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student_LP = cursor.fetchone()
+
+                                    #Top students based on their average grade for programming courses
+                                    if student_LP:
+                                        student_LP_id = student_LP['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator_inner), int(student_LP_id)))        
+                                        mysql.connection.commit()
+                                
+                                    else:
+                                        mes='unexpected error occured!'
+                                    
+                                    no_of_groups_inner = no_of_groups_inner - 1
+
+                                # - outer
+                                result1_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student1 = cursor.fetchone()
+
+                                if student1:
+                                    student1_id = student1['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student1_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result2_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student2 = cursor.fetchone()
+
+                                if student2:
+                                    student2_id = student2['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student2_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result3_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student3 = cursor.fetchone()
+
+                                if student3:
+                                    student3_id = student3['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+                                
+                                result4_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                student4 = cursor.fetchone()
+
+                                if student4:
+                                    student4_id = student4['id']
+                                    cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_id)))        
+                                    mysql.connection.commit()
+                            
+                                else:
+                                    mes='unexpected error occured!'
+
+                                if remain_students > 0:
+                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student5_remain = cursor.fetchone()
+
+                                    if student5_remain:
+                                        student5_remain_id = student5_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    remain_students = remain_students - 1
+                                                
+                                no_of_groups = no_of_groups - 1
+                    
+                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+    
+    return render_template('groupings_IT.html', students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT= sections_IT)
 
 @app.route('/student_records')
 def student_records():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    result = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id")
+    result = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
     student = cursor.fetchall()
     return render_template('student_records.html', student=student)
 
@@ -445,6 +5432,8 @@ def register():
         lastName = request.form['lastName']
         password = request.form['password']
         email = request.form['email']
+        section = request.form['section']
+        program = request.form['program']
         userType = request.form['userType']
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -458,7 +5447,7 @@ def register():
             mesage = 'Please fill out the form !'
         else:
             if(userType == 'student'):
-                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, session['section'], session['program'],))
+                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, section, program,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
             else:

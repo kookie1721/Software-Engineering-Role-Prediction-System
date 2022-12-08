@@ -24,7 +24,7 @@
         <div class="sidebar-menu">
         <ul>    
                 <li>
-                    <a class="active"><span class="las la-users"></span>
+                    <a class="active"><span class="las la-home"></span>
                     <span>Dashboard</span></a>
                 </li>
 
@@ -34,8 +34,13 @@
                 </li>
 
                 <li>
-                    <a href="{{ url_for('groupings') }}"><span class="las la-users-cog"></span>
-                    <span>Groupings</span></a>
+                    <a href="{{ url_for('groupings_IT') }}"><span class="las la-users-cog"></span>
+                    <span>Groupings (BSIT)</span></a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('groupings_CS') }}"><span class="las la-users-cog"></span>
+                    <span>Groupings (BSCS)</span></a>
                 </li>
 
                 <li>
