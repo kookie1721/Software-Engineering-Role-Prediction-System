@@ -59,7 +59,7 @@
                 <label for="nav-toggle">
                     <span class="las la-bars"></span>
                 </label>
-                Student Records
+                Student Records (All Programs)
             </h2>
         </header>
         
@@ -69,6 +69,7 @@
                     <table id="data_table" class="table table-striped table-hover">
                         <thead>
                             <tr>
+                                <th>Academic Year</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Section</th>
@@ -80,6 +81,7 @@
                         <tbody>
                             {% for row in student %}
                             <tr>
+                                <td> {{row.AY}}</td>
                                 <td> {{row.firstName}}</td>
                                 <td> {{row.lastName}} </td>
                                 <td> {{row.section}} </td>

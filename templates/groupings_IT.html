@@ -89,6 +89,7 @@
                             <th>Program</th>
                             <th>Main Role</th>
                             <th>Secondary Role</th>
+                            <th>Academic Year</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,6 +135,8 @@
                             {% if row.SECOND_ROLE == 5%}
                             <td> None </td>
                             {% endif %}
+
+                            <td> {{row.AY}} </td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -5,6 +5,7 @@ import pandas as pd
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
+import datetime
 
 
 app = Flask(__name__)
@@ -435,7 +436,7 @@ def groupings_CS():
     result4 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' ORDER BY predict.id DESC")
     students_BSCS3D = cursor.fetchall()
 
-    result9 = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
+    result9 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
     students_all = cursor.fetchall()
     if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
         group_size = int(request.form['s_groupSize'])
@@ -2930,7 +2931,7 @@ def groupings_IT():
     result8 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' ORDER BY predict.id DESC")
     students_BSIT3D = cursor.fetchall()
 
-    result9 = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
+    result9 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
     students_all = cursor.fetchall()
 
     if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
@@ -5410,7 +5411,7 @@ def groupings_IT():
 @app.route('/student_records')
 def student_records():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    result = cursor.execute("SELECT users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
+    result = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
     student = cursor.fetchall()
     return render_template('student_records.html', student=student)
 
@@ -5435,6 +5436,13 @@ def register():
         section = request.form['section']
         program = request.form['program']
         userType = request.form['userType']
+        d1 = datetime.datetime.now()
+        AY = ""
+
+        if d1.month >= 7 and d1.month <= 12:
+            AY = str(d1.year) + "-" + str(d1.year + 1) 
+        elif d1.month >= 1 and d1.month <= 6:
+            AY = str(d1.year - 1) + "-" + str(d1.year)
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM users WHERE email = % s', (email,))
@@ -5447,11 +5455,11 @@ def register():
             mesage = 'Please fill out the form !'
         else:
             if(userType == 'student'):
-                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, section, program,))
+                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password, section, program,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
             else:
-                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s)', (userType, firstName, lastName, email, password, "none", "none",))
+                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password, "none", "none",))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
 
