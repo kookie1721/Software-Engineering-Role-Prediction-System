@@ -368,9 +368,10 @@ def result_predict():
 
         df=pd.DataFrame([newdata.values()],columns=list(newdata.keys()))
         
+        s_prediction=dtc_second_model.predict(df)
         m_prediction=dtc_model.predict(df)
         
-        s_prediction=dtc_second_model.predict(df)
+       
         
         cursor.execute('UPDATE predict SET MAIN_ROLE = % s, SECOND_ROLE = % s WHERE userID = % s', (int(m_prediction), int(s_prediction), predict_user['userID'], ))
         mysql.connection.commit()
