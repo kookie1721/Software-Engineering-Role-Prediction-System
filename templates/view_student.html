@@ -16,7 +16,16 @@
               <!-- Breadcrumb -->
               <nav style="padding: .1rem; margin: .5rem;" aria-label="breadcrumb" class="main-breadcrumb">
                 <ol class="breadcrumb">
-                  <li  class="breadcrumb-item"><a href="{{ url_for('dashboard_student') }}">Home</a></li>
+                  <li  class="breadcrumb-item"><a href="{{ url_for('dashboard_teacher') }}">Home</a></li>
+                  {% if student_records_page == 'true' %}
+                  <li  class="breadcrumb-item"><a href="{{ url_for('student_records') }}">Student Records</a></li>
+                  {% endif %}
+                  {% if groupings_it_page == 'true' %}
+                  <li  class="breadcrumb-item"><a href="{{ url_for('groupings_IT') }}">Groupings(IT)</a></li>
+                  {% endif %}
+                  {% if groupings_cs_page == 'true' %}
+                  <li  class="breadcrumb-item"><a href="{{ url_for('groupings_CS') }}">Groupings(CS)</a></li>
+                  {% endif %}
                   <li class="breadcrumb-item active" aria-current="page">Student's Profile</li>
                 </ol>
               </nav>
@@ -65,14 +74,9 @@
                           {% if user_roles.SECOND_ROLE == 5%}
                           <p class="text-secondary mb-1">Secondary Role: NONE</p>
                           {% endif %}
-                          
-                          {% if is_predict > 0%}
-                          <a href="{{ url_for('repredict') }}" class="btn btn-danger">Repredict</a>
-                          {% endif %}
-                          {% if is_predict == 0%}
-                          <a href="{{ url_for('start') }} " class="btn btn-success">Predict</a>
-                          {% endif %}
 
+                          <p class="text-secondary mb-1">Group: {{user_roles._group}}</p>
+                        
                         </div>
                       </div>
                     </div>
@@ -81,17 +85,6 @@
                 <div class="col-md-8">
                   <div class="card mb-3">
                     <div class="card-body">
-                      {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                          {% for message in messages%}
-                          <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <strong>{{message}}</strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                          </div>
-                          {% endfor %}
-                          
-                        {% endif %}
-                      {% endwith %}
                         <h4 class="text-center">BASIC INFORMATION</h4>
                         <hr>
                       <div class="row">
@@ -140,15 +133,11 @@
                       </div>
                       <hr>
                      
-                      <div class="row">
-                        <div class="col-sm-12">
-                          <a class="btn btn-success " href="{{ url_for('edit_profile') }}">Edit Basic Information</a>
-                        </div>
-                      </div>
+              
 
                       <!--Make it dynamic-->
                       <br>
-                      <h4 class="text-center">PREDICTED INFORMATION</h4>
+                      <h4 class="text-center">STUDENT'S PREDICTED INFORMATION</h4>
                       <hr>
                       <div class="row">
                         <div class="col-sm-3">

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, session
+from flask import Flask, flash, render_template, url_for, request, redirect, session
 import pickle
 import numpy as np
 import pandas as pd
@@ -145,6 +145,81 @@ def view_profile():
 
     return render_template('view_profile.html', user_roles=user_roles, is_predict=is_predict)
 
+@app.route('/student_records/student_profile', methods=['GET', 'POST'])
+def view_student():
+    if request.method == 'POST'  and 's_record' in request.form and 'userID' in request.form:
+        userID = request.form['userID'] 
+        student_records_page = request.form['s_record']
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM users WHERE id = % s', (userID,))
+        user = cursor.fetchone()
+
+        session['loggedin'] = True
+        loggedin = True
+        session['userid'] = user['id']
+        session['lastName'] = user['lastName']
+        session['firstName'] = user['firstName']
+        session['email'] = user['email']
+        session['program'] = user['program']
+        session['section'] = user['section']
+
+        is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
+        user_roles = cursor.fetchone()
+
+        return render_template('view_student.html', student_records_page=student_records_page, user_roles=user_roles, is_predict=is_predict)
+
+    return render_template('view_student.html', student_records_page=student_records_page, user_roles=user_roles, is_predict=is_predict)
+
+@app.route('/groupings_CS/student_profile', methods=['GET', 'POST'])
+def view_student_CS():
+    if request.method == 'POST'  and 'g_cs' in request.form and 'userID' in request.form:
+        userID = request.form['userID'] 
+        groupings_cs_page = request.form['g_cs']
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM users WHERE id = % s', (userID,))
+        user = cursor.fetchone()
+
+        session['loggedin'] = True
+        loggedin = True
+        session['userid'] = user['id']
+        session['lastName'] = user['lastName']
+        session['firstName'] = user['firstName']
+        session['email'] = user['email']
+        session['program'] = user['program']
+        session['section'] = user['section']
+
+        is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
+        user_roles = cursor.fetchone()
+
+        return render_template('view_student.html', groupings_cs_page=groupings_cs_page, user_roles=user_roles, is_predict=is_predict)
+
+    return render_template('view_student.html', groupings_cs_page=groupings_cs_page, user_roles=user_roles, is_predict=is_predict)
+
+@app.route('/groupings_IT/student_profile', methods=['GET', 'POST'])
+def view_student_IT():
+    if request.method == 'POST'  and 'g_it' in request.form and 'userID' in request.form:
+        userID = request.form['userID'] 
+        groupings_it_page = request.form['g_it']
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM users WHERE id = % s', (userID,))
+        user = cursor.fetchone()
+
+        session['loggedin'] = True
+        loggedin = True
+        session['userid'] = user['id']
+        session['lastName'] = user['lastName']
+        session['firstName'] = user['firstName']
+        session['email'] = user['email']
+        session['program'] = user['program']
+        session['section'] = user['section']
+
+        is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
+        user_roles = cursor.fetchone()
+
+        return render_template('view_student.html', groupings_it_page=groupings_it_page, user_roles=user_roles, is_predict=is_predict)
+
+    return render_template('view_student.html', groupings_it_page=groupings_it_page, user_roles=user_roles, is_predict=is_predict)
+
 @app.route('/dashboard_student/edit_profile', methods =['GET', 'POST'])
 def edit_profile():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -171,6 +246,7 @@ def edit_profile():
         cursor.execute('UPDATE users SET firstName = % s, lastName = % s, email = % s, program = % s, section = % s WHERE id = % s ', (firstName, lastName, email, program, section, session['userid'], ))
         mysql.connection.commit()
 
+        flash("Basic information was edited successfully.")
         mes = "Information was edited successfully."
         return redirect(url_for('view_profile'))
 
@@ -179,7 +255,7 @@ def edit_profile():
 @app.route('/dashboard_student')
 def dashboard_student():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
+    cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'], ))
     user = cursor.fetchone()
     session['loggedin'] = True
     loggedin = True
@@ -189,7 +265,40 @@ def dashboard_student():
     session['email'] = user['email']
     session['program'] = user['program']
 
-    return render_template('dashboard_student.html')
+    cursor.execute('SELECT * FROM predict WHERE userID = % s', (session['userid'], ))
+    record = cursor.fetchone()
+    m_prediction = record['MAIN_ROLE']
+    s_prediction = record['SECOND_ROLE']
+
+    if m_prediction == 0:
+        m_prediction = 'Lead Programmer'
+    elif m_prediction == 1:
+        m_prediction = 'Project Manager'
+    elif m_prediction == 2:
+        m_prediction = 'UI/UX Designer'
+    elif m_prediction == 3:
+        m_prediction = 'Quality Assurance Engineer'
+    elif m_prediction == 4:
+        m_prediction = 'Business Analyst'
+
+    if s_prediction == 0:
+        s_prediction = 'Lead Programmer'
+    elif s_prediction == 1:
+        s_prediction = 'Project Manager'
+    elif s_prediction == 2:
+        s_prediction = 'UI/UX Designer'
+    elif s_prediction == 3:
+        s_prediction = 'Quality Assurance Engineer'
+    elif s_prediction == 4:
+        s_prediction = 'Business Analyst'
+    elif s_prediction == 5:
+        s_prediction = 'NONE'
+    
+    if record:
+        has_record = True
+        return render_template('dashboard_student.html', has_record=has_record, main_role=m_prediction, second_role = s_prediction)
+
+    return render_template('dashboard_student.html', main_role=m_prediction, second_role = s_prediction)
     
 
 @app.route('/dashboard_student/start_repredict', methods =['GET', 'POST'])
@@ -557,6 +666,7 @@ def dashboard_teacher():
 
         return render_template('dashboard_teacher.html')
 
+#BSCS
 @app.route('/groupings_CS', methods =['GET', 'POST'])
 def groupings_CS():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -576,8 +686,23 @@ def groupings_CS():
     result4 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' ORDER BY predict.id DESC")
     students_BSCS3D = cursor.fetchall()
 
-    result9 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
+    result1_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3A_wo = cursor.fetchall()
+
+    result2_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3B_wo = cursor.fetchall()
+
+    result3_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3C_wo = cursor.fetchall()
+
+    result4_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3D_wo = cursor.fetchall()
+
+    result9 = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
     students_all = cursor.fetchall()
+
+    result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_wo_group = cursor.fetchall()
     if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
         group_size = int(request.form['s_groupSize'])
         program = request.form['program']
@@ -587,14 +712,14 @@ def groupings_CS():
 
             if result1 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3A) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result1_wo=result1_wo, students_wo_group = students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSCS3A_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result1_wo=result1_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
@@ -812,8 +937,8 @@ def groupings_CS():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result1_wo=result1_wo, mes_s=mes_s, mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
@@ -1082,8 +1207,8 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -1403,20 +1528,20 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
         #BSCS 3B
         elif program == 'BSCS' and section == '3B':
             if result2 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3B) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSCS3B_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
@@ -1634,8 +1759,8 @@ def groupings_CS():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
@@ -1904,8 +2029,8 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -2225,20 +2350,20 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
         #BSCS 3C
         elif program == 'BSCS' and section == '3C':
             if result3 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3C) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSCS3C_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_CS.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                return render_template('groupings_CS.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
@@ -2456,8 +2581,8 @@ def groupings_CS():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
@@ -2726,8 +2851,9 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -3047,11 +3173,13 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_CS.html', mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
-    return render_template('groupings_CS.html', students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
+    return render_template('groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo,students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
+#BSIT
 @app.route('/groupings_IT', methods =['GET', 'POST'])
 def groupings_IT():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -3071,8 +3199,23 @@ def groupings_IT():
     result8 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' ORDER BY predict.id DESC")
     students_BSIT3D = cursor.fetchall()
 
-    result9 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
+    result9 = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
     students_all = cursor.fetchall()
+
+    result1_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3A_wo = cursor.fetchall()
+
+    result2_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3B_wo = cursor.fetchall()
+
+    result3_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3C_wo = cursor.fetchall()
+
+    result4_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3D_wo = cursor.fetchall()
+
+    result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_wo_group = cursor.fetchall()
 
     if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
         group_size = int(request.form['s_groupSize'])
@@ -3083,14 +3226,14 @@ def groupings_IT():
 
             if result5 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3A) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result1_wo=result1_wo,students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSIT3A_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result1_wo=result1_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
@@ -3308,8 +3451,8 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
@@ -3578,8 +3721,9 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -3900,19 +4044,20 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
                     
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
         #BSIT 3B
         elif program == 'BSIT' and section == '3B':
             if result6 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3B) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSIT3B_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
@@ -4130,8 +4275,8 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
@@ -4401,7 +4546,8 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
                     
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -4721,20 +4867,21 @@ def groupings_IT():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
-                    
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
         #BSIT 3C
         elif program == 'BSIT' and section == '3C':
             if result7 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3C) or they might not have predicted their main and secondary roles yet!"
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
             result_check = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
             students_BSIT3C_check = cursor.fetchall()
 
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
-                return render_template('groupings_IT.html', mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                return render_template('groupings_IT.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
@@ -4952,8 +5099,8 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
 
-                    
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
                 #When the selected group size is 4
                 elif group_size == 4:
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
@@ -5223,7 +5370,8 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
                     
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
 
                 #When the selected group size is 5
                 elif group_size == 5:
@@ -5544,14 +5692,15 @@ def groupings_IT():
                                                 
                                 no_of_groups = no_of_groups - 1
                     
-                    return render_template('groupings_IT.html', mes=mes, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+                    return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
     
-    return render_template('groupings_IT.html', students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT= sections_IT)
+    return render_template('groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT= sections_IT)
 
 @app.route('/student_records')
 def student_records():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    result = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
+    result = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
     student = cursor.fetchall()
     return render_template('student_records.html', student=student)
 

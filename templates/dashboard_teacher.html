@@ -42,12 +42,6 @@
                     <a href="{{ url_for('groupings_CS') }}"><span class="las la-users-cog"></span>
                     <span>Groupings (BSCS)</span></a>
                 </li>
-
-                <li>
-                    <a href="{{ url_for('logout') }}"><span class="las la-sign-out-alt"></span>
-                    <span>Logout</span></a>
-                </li>   
-              
                 
             </ul>
         </div>
@@ -61,6 +55,9 @@
                 </label>
                 Dashboard
             </h2>
+            <button style="border: none;background-color: #fff;" type="button"  data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <span class="las la-sign-out-alt"></span> <span>Logout</span>
+            </button>
         </header>
 
 
@@ -299,6 +296,28 @@
 
            </div>
         </main>
+    </div>
+
+    <!-- logout -->
+    <div class="modal fade" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="logoutModalLabel">Logout</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+            <h5 class="text-center"> Do you wish to logout?</h5>
+            
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-success">Yes</a>
+            </div>
+            
+        </div>
+        </div>
     </div>
 
     {% if loggedin is defined and loggedin %}

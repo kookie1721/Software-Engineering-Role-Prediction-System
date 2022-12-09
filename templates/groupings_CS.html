@@ -43,12 +43,7 @@
                     <span>Groupings (BSCS)</span></a>
                 </li>
 
-                <li>
-                    <a href="{{ url_for('logout') }}"><span class="las la-sign-out-alt"></span>
-                    <span>Logout</span></a>
-                </li>   
-              
-                
+                  
             </ul>
         </div>
     </div>
@@ -61,6 +56,9 @@
                 </label>
                 Groupings (BS in Computer Science)
             </h2>
+            <button style="border: none;background-color: #fff;" type="button"  data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <span class="las la-sign-out-alt"></span> <span>Logout</span>
+            </button>
         </header>
 
         <!--class size should be fetched already from the backend. then display it in this page using IF statements
@@ -68,7 +66,7 @@
         KAYA MO YAN MARK HUHUHU
         -->
 
-        <main>
+        <main style="white-space:nowrap;">
            <div class="container">
             {% if mes_no_studs is defined and mes_no_studs %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -86,9 +84,9 @@
                             <th>Last Name</th>
                             <th>Section</th>
                             <th>Program</th>
-                            <th>Main Role</th>
-                            <th>Secondary Role</th>
+                           
                             <th>Academic Year</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,42 +98,18 @@
                             <td> {{row.section}} </td>
                             <td> {{row.program}} </td>
 
-                            {% if row.MAIN_ROLE == 0%}
-                            <td> Lead Programmer </td>
-                            {% endif %}
-                            {% if row.MAIN_ROLE == 1%}
-                            <td> Project Manager </td>
-                            {% endif %}
-                            {% if row.MAIN_ROLE == 2%}
-                            <td> UI/UX Designer </td>
-                            {% endif %}
-                            {% if row.MAIN_ROLE == 3%}
-                            <td> QA Engineer </td>
-                            {% endif %}
-                            {% if row.MAIN_ROLE == 4%}
-                            <td> Business Analyst </td>
-                            {% endif %}
-                               
-                            {% if row.SECOND_ROLE == 0%}
-                            <td> Lead Programmer </td>
-                            {% endif %}
-                            {% if row.SECOND_ROLE == 1%}
-                            <td> Project Manager </td>
-                            {% endif %}
-                            {% if row.SECOND_ROLE == 2%}
-                            <td> UI/UX Designer </td>
-                            {% endif %}
-                            {% if row.SECOND_ROLE == 3%}
-                            <td> QA Engineer </td>
-                            {% endif %}
-                            {% if row.SECOND_ROLE == 4%}
-                            <td> Business Analyst </td>
-                            {% endif %}
-                            {% if row.SECOND_ROLE == 5%}
-                            <td> None </td>
-                            {% endif %}
+                            
                             
                             <td> {{row.AY}} </td>
+
+                            <td>
+                                <form action="/groupings_CS/student_profile" method="POST">
+                                    <input type="text" name="g_cs" value="true" hidden>
+                                    <input type="text" name="userID" value="{{row.id}}" hidden>
+                                    <button type="submit" name="submit" class="btn btn-info"><i class="las la-search"></i> view</button>
+                                </form>
+                                
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -160,9 +134,15 @@
                 <div class="modal-body">
                     <h5 id="cl_bscs3a" style="display:none; text-align: center;">Class Size (BSCS3A): {{students_BSCS3A}}</h5>
 
+                    <h5 id="wo_bscs3a" style="display:none; text-align: center;"> Student/s with no group/s (BSCS3A): {{result1_wo}}</h5>
+
                     <h5 id="cl_bscs3b" style="display:none; text-align: center;">Class Size (BSCS3B): {{students_BSCS3B}}</h5>
+                    
+                    <h5 id="wo_bscs3b" style="display:none; text-align: center;"> Student/s with no group/s (BSCS3B): {{result2_wo}}</h5>
 
                     <h5 id="cl_bscs3c" style="display:none; text-align: center;">Class Size (BSCS3C): {{students_BSCS3C}}</h5>
+                    
+                    <h5 id="wo_bscs3c" style="display:none; text-align: center;"> Student/s with no group/s (BSCS3C): {{result3_wo}}</h5>
 
                     <h5 id="cl_bscs3d" style="display:none; text-align: center;">Class Size (BSCS3D): {{students_BSCS3D}}</h5>
 
@@ -189,7 +169,7 @@
                     
                     <br>
 
-                    <p style="text-align: center;">Note: Software Engineering roles will depend on the number of members in a team.
+                    <p style="text-align: center; color: orange;">Note: Software Engineering roles will depend on the number of members in a team.
                         <b> Example: 3 members in a team will consists of Lead Programmer, Project Manager, and UI/UX designer. </b> <br>
                         In addtion, only students who have predicted their main and secondary roles are the ones who can be grouped.
                     </p>
@@ -219,6 +199,28 @@
         </div>
     </div>
 
+    <!-- logout -->
+    <div class="modal fade" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="logoutModalLabel">Logout</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+            <h5 class="text-center"> Do you wish to logout?</h5>
+            
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-success">Yes</a>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -230,17 +232,17 @@
          $('#program').change(function(){
           if($(this).val()==="BSCS"){
             $('#sections_CS_container').show();
-            $('#sections_IT_container').hide();
 
             $('#cl_bscs3a').hide();
             $('#cl_bscs3b').hide();
             $('#cl_bscs3c').hide();
             $('#cl_bscs3d').hide();
 
-            $('#cl_bsit3a').hide();
-            $('#cl_bsit3b').hide();
-            $('#cl_bsit3c').hide();
-            $('#cl_bsit3d').hide();
+            $('#wo_bscs3a').hide();
+            $('#wo_bscs3b').hide();
+            $('#wo_bscs3c').hide();
+            $('#wo_bscs3d').hide();
+
           }
           else if($(this).val()===""){
             $('#sections_CS_container').hide();
@@ -250,10 +252,11 @@
             $('#cl_bscs3c').hide();
             $('#cl_bscs3d').hide();
 
-            $('#cl_bsit3a').hide();
-            $('#cl_bsit3b').hide();
-            $('#cl_bsit3c').hide();
-            $('#cl_bsit3d').hide();
+            $('#wo_bscs3a').hide();
+            $('#wo_bscs3b').hide();
+            $('#wo_bscs3c').hide();
+            $('#wo_bscs3d').hide();
+
           }
           
         }).change();
@@ -267,12 +270,22 @@
         $('#cl_bscs3c').hide();
         $('#cl_bscs3d').hide();
 
+        $('#wo_bscs3a').show();
+        $('#wo_bscs3b').hide();
+        $('#wo_bscs3c').hide();
+        $('#wo_bscs3d').hide();
+
         }
         else if($(this).val()==="3B"){
         $('#cl_bscs3b').show();
         $('#cl_bscs3a').hide();
         $('#cl_bscs3c').hide();
         $('#cl_bscs3d').hide();
+
+        $('#wo_bscs3a').hide();
+        $('#wo_bscs3b').show();
+        $('#wo_bscs3c').hide();
+        $('#wo_bscs3d').hide();
 
         }
         else if($(this).val()==="3C"){
@@ -281,6 +294,11 @@
         $('#cl_bscs3c').show();
         $('#cl_bscs3d').hide();
 
+        $('#wo_bscs3a').hide();
+        $('#wo_bscs3b').hide();
+        $('#wo_bscs3c').show();
+        $('#wo_bscs3d').hide();
+
         }
         else if($(this).val()==="3D"){
         $('#cl_bscs3b').hide();
@@ -288,12 +306,22 @@
         $('#cl_bscs3c').hide();
         $('#cl_bscs3d').show();
 
+        $('#wo_bscs3a').hide();
+        $('#wo_bscs3b').hide();
+        $('#wo_bscs3c').hide();
+        $('#wo_bscs3d').show();
+
         }
         else if($(this).val()===""){
         $('#cl_bscs3a').hide();
         $('#cl_bscs3b').hide();
         $('#cl_bscs3c').hide();
         $('#cl_bscs3d').hide();
+
+        $('#wo_bscs3a').hide();
+        $('#wo_bscs3b').hide();
+        $('#wo_bscs3c').hide();
+        $('#wo_bscs3d').hide();
 
         }
         
@@ -350,6 +378,19 @@
             $('#data_table').DataTable();
         } );
     </script>
+
+    {% if mes_s is defined and mes_s %}
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Yehey!',
+                html: '<h4> {{mes_s}} </h4>',
+                showConfirmButton: true,
+                allowOutsideClick: false,
+                confirmButtonText: 'OKAY!'
+            });
+        </script>
+    {% endif %}
     
 </body>
 </html>
