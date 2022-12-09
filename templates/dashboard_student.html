@@ -13,7 +13,7 @@
 <body>
     
     <nav style="display: flex; justify-content: end;">
-        <p style="font-size: 18px;margin: 5px 20px;color: white;" >Welcome! {{session.firstName}} {{session.lastName}}</p>
+        <p style="font-size: 18px;margin: 5px 25px;color: white;" >Welcome! {{session.firstName}} {{session.lastName}} <a href="{{ url_for('view_profile') }}">Profile <i class="fas fa-user"></i></a> </p>
         
         <a href="{{ url_for('logout') }}" style="font-size: 18px;margin: 5px;color: white;"><i class="fas fa-sign-out-alt"></i></a> 
     </nav>
@@ -51,7 +51,7 @@
             {% if has_record is defined and has_record %}
                 <h2 class="startBtn">Repredict Main and Secondary Roles</h2>
                 <div style="display: flex;justify-content:center;width: 50%;">
-                    <a href="#">
+                    <a href="{{ url_for('repredict') }}">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -62,7 +62,7 @@
              {% elif session['has_record'] is defined and session['has_record'] %}
                 <h2 class="startBtn">Repredict Main and Secondary Roles</h2>
                 <div style="display: flex;justify-content:center;width: 50%;">
-                    <a href="#">
+                    <a href="{{ url_for('repredict') }}">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    {% if session.loggedin is defined and session.loggedin %}
+    {% if loggedin is defined and loggedin %}
         <script>
             Swal.fire({
                 icon: 'success',

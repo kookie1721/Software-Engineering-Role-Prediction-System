@@ -26,19 +26,52 @@ mysql = MySQL(app)
 def login():
     mesage = ''
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
-        email = request.form['email']
-        password = request.form['password']
+
+        session['email'] = request.form['email']
+        session['password'] = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (email, password, ))
+        cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
         user = cursor.fetchone()
+
+        registered_studs_result = cursor.execute('SELECT * FROM users')
+        registered_studs_data = cursor.fetchall()
+
+        registered_studs_result_10 = cursor.execute('SELECT * FROM users ORDER BY id DESC LIMIT 10')
+        registered_studs_data_10 = cursor.fetchall()
+
+        session['no_registered_studs_result'] = registered_studs_result
+        session['no_registered_studs_data_10'] = registered_studs_data_10
+
+        predicted_studs_result_IT = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 0')
+        predicted_studs_data_IT = cursor.fetchall()
+        session['no_predicted_studs_result_IT'] = predicted_studs_result_IT
+        session['no_predicted_studs_data_IT'] = predicted_studs_data_IT
+
+        predicted_studs_result_CS = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID  WHERE predict.program = 1')
+        predicted_studs_data_CS = cursor.fetchall()
+        session['no_predicted_studs_result_CS'] = predicted_studs_result_CS
+        session['no_predicted_studs_data_CS'] = predicted_studs_data_CS
+
+        predicted_studs_result_10_IT = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 0 ORDER BY predict.id DESC LIMIT 10')
+        predicted_studs_data_10_IT = cursor.fetchall()
+        session['no_predicted_studs_result_10_IT'] = predicted_studs_result_10_IT
+        session['no_predicted_studs_data_10_IT'] = predicted_studs_data_10_IT
+
+        predicted_studs_result_10_CS = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 1 ORDER BY predict.id DESC LIMIT 10')
+        predicted_studs_data_10_CS = cursor.fetchall()
+        session['no_predicted_studs_result_10_CS'] = predicted_studs_result_10_CS
+        session['no_predicted_studs_data_10_CS'] = predicted_studs_data_10_CS
+
         if user:
             if user['userType'] == 'student':
                 session['loggedin'] = True
+                loggedin = True
                 session['userid'] = user['id']
                 session['lastName'] = user['lastName']
                 session['firstName'] = user['firstName']
                 session['email'] = user['email']
                 session['program'] = user['program']
+                session['section'] = user['section']
                 mesage = 'Logged in successfully !'
 
                 cursor.execute('SELECT * FROM predict WHERE userID = % s', (user['id'], ))
@@ -72,12 +105,14 @@ def login():
                         s_prediction = 'Business Analyst'
                     elif s_prediction == 5:
                         s_prediction = 'NONE'
-                    return render_template('dashboard_student.html', mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
+                    return render_template('dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
                 else:
                     has_record = False
-                    return render_template('dashboard_student.html', mesage = mesage, has_record=has_record)
+                    return render_template('dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record)
             elif user['userType'] == 'teacher':
+                no = 0   
                 session['loggedin'] = True
+                loggedin = True
                 session['userid'] = user['id']
                 session['lastName'] = user['lastName']
                 session['firstName'] = user['firstName']
@@ -85,76 +120,88 @@ def login():
                 session['program'] = user['program']
                 mesage = 'Logged in successfully !'
 
-                return render_template('dashboard_teacher.html', mesage = mesage) 
+                return render_template('dashboard_teacher.html', loggedin=loggedin, mesage = mesage) 
         else:
             mesage = 'Email or Password is incorrect!'
     return render_template('index.html', mesage = mesage)
 
+@app.route('/dashboard_student/profile')
+def view_profile():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'],))
+    user = cursor.fetchone()
+
+    session['loggedin'] = True
+    loggedin = True
+    session['userid'] = user['id']
+    session['lastName'] = user['lastName']
+    session['firstName'] = user['firstName']
+    session['email'] = user['email']
+    session['program'] = user['program']
+    session['section'] = user['section']
+
+    is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
+    user_roles = cursor.fetchone()
+
+    return render_template('view_profile.html', user_roles=user_roles, is_predict=is_predict)
+
+@app.route('/dashboard_student/edit_profile', methods =['GET', 'POST'])
+def edit_profile():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'], ))
+    user = cursor.fetchone()
+
+    session['loggedin'] = True
+    loggedin = True
+    session['userid'] = user['id']
+    session['lastName'] = user['lastName']
+    session['firstName'] = user['firstName']
+    session['email'] = user['email']
+    session['program'] = user['program']
+    session['section'] = user['section']
+    is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
+    user_roles = cursor.fetchone()
+    
+    if request.method == 'POST'  and 'firstName' in request.form and 'lastName' in request.form and 'email' in request.form and 'program' in request.form and 'section' in request.form: 
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        email = request.form['email']
+        program = request.form['program']
+        section = request.form['section']
+        cursor.execute('UPDATE users SET firstName = % s, lastName = % s, email = % s, program = % s, section = % s WHERE id = % s ', (firstName, lastName, email, program, section, session['userid'], ))
+        mysql.connection.commit()
+
+        mes = "Information was edited successfully."
+        return redirect(url_for('view_profile'))
+
+    return render_template('edit_profile.html', user_roles=user_roles, is_predict=is_predict)
+
 @app.route('/dashboard_student')
 def dashboard_student():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
+    user = cursor.fetchone()
+    session['loggedin'] = True
+    loggedin = True
+    session['userid'] = user['id']
+    session['lastName'] = user['lastName']
+    session['firstName'] = user['firstName']
+    session['email'] = user['email']
+    session['program'] = user['program']
+
     return render_template('dashboard_student.html')
+    
 
-@app.route('/dashboard_student/start', methods =['GET', 'POST'])
+@app.route('/dashboard_student/start_repredict', methods =['GET', 'POST'])
 def repredict():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT predict.id, users.firstName, users.lastName FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.userID = % s', (session['userid'],))
+    del_user = cursor.fetchone()
 
-    #still not done here.
+    cursor.execute('DELETE FROM predict WHERE id = % s', (del_user['id'], ))
+    mysql.connection.commit()
 
-    GPA = 0
-    mesage = ''
-    if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form :
-        CC101 = request.form['CC101']
-        CC102 = request.form['CC102']
-        ITC = request.form['ITC']
-        IM = request.form['IM']
-        OOP = request.form['OOP']
-        HCI = request.form['HCI']
-        DSA = request.form['DSA']
-
-        CC101_units = (float(CC101) * 4)
-        CC102_units = (float(CC102) * 4)
-        ITC_units = (float(ITC) * 3)
-        IM_units = (float(IM) * 4)
-        OOP_units = (float(OOP) * 4)
-        HCI_units = (float(HCI) * 1)
-        DSA_units = (float(DSA) * 4)
-
-        total_units = 24
-
-        # multiplying the grades with the units of each subject and getting the sum of the multiple grades
-        # to calculate the GPA.
-
-        final_grade = (float(CC101) * 4) + (float(CC102) * 4) + (float(ITC) * 3) + (float(IM) * 4) + (float(OOP) * 4) + (float(HCI) * 1) + (float(DSA) * 4)
-        
-
-        #Dividing the final grade with the total units to generate the GPA.
-        GPA = float(final_grade) / int(total_units)
-        final_GPA = round(GPA, 2)
-
-        #calculating the average grade for the programming subjects
-        prog_avg = (float(CC101) + float(CC102) + float(IM) + float(OOP)) / 4
-        final_prog_avg = round(prog_avg, 2)
-        
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT program FROM users WHERE id = % s', (session['userid'],))
-        program = cursor.fetchone()
-
-        if program['program'] == 'BSIT':
-            f_program = 0
-        elif program['program'] == 'BSCS':
-            f_program = 1
-
-        if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form:
-             cursor.execute('INSERT INTO predict (userID, program, comprog1, comprog2, intro_computing, IM, OOP, HCI, DSA, comprog1_units, comprog2_units, intro_computing_units, IM_units, OOP_units, HCI_units, DSA_units, programming_avg, gpa) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s )', (session['userid'], f_program, CC101, CC102, ITC, IM, OOP, HCI, DSA, CC101_units, CC102_units, ITC_units, IM_units, OOP_units, HCI_units, DSA_units, final_prog_avg, final_GPA, ))
-             mysql.connection.commit()
-             return render_template('result_gpa.html', GPA=final_GPA)
-        else:
-            mesage = 'Something went wrong!'
-            return render_template('result_gpa.html', mesage=mesage)
-
-    elif request.method == 'POST':
-        mesage = 'something went wrong!'
-    return render_template('start.html', mesage=mesage)
-
+    return redirect(url_for('start'))
 
 @app.route('/dashboard_student/start', methods =['GET', 'POST'])
 def start():
@@ -478,7 +525,37 @@ def result_predict():
 
 @app.route('/dashboard_teacher')
 def dashboard_teacher():
-    return render_template('dashboard_teacher.html')
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        registered_studs_result = cursor.execute('SELECT * FROM users')
+        registered_studs_data = cursor.fetchall()
+
+        registered_studs_result_10 = cursor.execute('SELECT * FROM users ORDER BY id DESC LIMIT 10')
+        registered_studs_data_10 = cursor.fetchall()
+
+        session['no_registered_studs_result'] = registered_studs_result
+        session['no_registered_studs_data_10'] = registered_studs_data_10
+
+        predicted_studs_result_IT = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 0')
+        predicted_studs_data_IT = cursor.fetchall()
+        session['no_predicted_studs_result_IT'] = predicted_studs_result_IT
+        session['no_predicted_studs_data_IT'] = predicted_studs_data_IT
+
+        predicted_studs_result_CS = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID  WHERE predict.program = 1')
+        predicted_studs_data_CS = cursor.fetchall()
+        session['no_predicted_studs_result_CS'] = predicted_studs_result_CS
+        session['no_predicted_studs_data_CS'] = predicted_studs_data_CS
+
+        predicted_studs_result_10_IT = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 0 ORDER BY predict.id DESC LIMIT 10')
+        predicted_studs_data_10_IT = cursor.fetchall()
+        session['no_predicted_studs_result_10_IT'] = predicted_studs_result_10_IT
+        session['no_predicted_studs_data_10_IT'] = predicted_studs_data_10_IT
+
+        predicted_studs_result_10_CS = cursor.execute('SELECT predict.*, users.AY, users.firstName, users.lastName, users.section, users.program FROM predict INNER JOIN users ON users.id = predict.userID WHERE predict.program = 1 ORDER BY predict.id DESC LIMIT 10')
+        predicted_studs_data_10_CS = cursor.fetchall()
+        session['no_predicted_studs_result_10_CS'] = predicted_studs_result_10_CS
+        session['no_predicted_studs_data_10_CS'] = predicted_studs_data_10_CS
+
+        return render_template('dashboard_teacher.html')
 
 @app.route('/groupings_CS', methods =['GET', 'POST'])
 def groupings_CS():
@@ -5485,7 +5562,18 @@ def logout():
     session.pop('firstName', None)
     session.pop('lastName', None)
     session.pop('email', None)
+    session.pop('password', None)
     session.pop('has_record', None)
+    session.pop('no_predicted_studs_result_IT', None)
+    session.pop('no_predicted_studs_data_IT', None)
+    session.pop('no_predicted_studs_result_CS', None)
+    session.pop('no_predicted_studs_data_CS', None)
+    session.pop('no_registered_studs_result', None)
+    session.pop('no_registered_studs_data_10', None)
+    session.pop('no_predicted_studs_result_10_IT', None)
+    session.pop('no_predicted_studs_data_10_IT', None)
+    session.pop('no_predicted_studs_result_10_CS', None)
+    session.pop('no_predicted_studs_data_10_CS', None)
     return redirect(url_for('login'))
 
 @app.route('/register', methods =['GET', 'POST'])

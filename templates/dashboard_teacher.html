@@ -63,19 +63,245 @@
             </h2>
         </header>
 
-        <!--Still not done with the instructor side, first fetch data from db. that's no 1 goal for today.
-        then proceed to the groupings module.
-        KAYA MO YAN MARK HUHUHU
-        -->
 
         <main>
            <div class="container">
-            <h4>Welcome user!</h4>
+            <h4>Welcome Instructor!</h4>
+            <div class="cards">
+                <div class="card-single">
+                    <div style="color: white;">
+                        Total registered student/s : {{session.no_registered_studs_result}}
+                        
+                    </div>
+                    <div>
+                        <span class="las la-users"></span>
+                    </div>
+                </div>
+
+                <div style="background-color: #081c15;" class="card-single">
+                    <div style="color: white; ">
+                        Total predicted student/s (BSIT): {{session.no_predicted_studs_result_IT}}
+                    </div>
+                    <div>
+                        <span style="color: white;" class="las la-users-cog"></span>
+                    </div>
+                </div>
+
+                <div class="card-single">
+                    <div style="color: white;">
+                        Total predicted student/s (BSCS): {{session.no_predicted_studs_result_CS}}
+                    </div>
+                    <div>
+                        <span class="las la-users-cog"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tem-grid">
+                <div class="registered_users">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Registered Students</h3>
+                            <a href="{{ url_for('student_records') }}">See all <span class="las la-arrow-right"></span></a>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive-cus">
+                                <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <td>A.Y.</td>
+                                            <td> First Name </td>
+                                            <td> Last Name </td>
+                                            <td> Section </td>
+                                            <td> Program</td>                                
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for row_ in session.no_registered_studs_data_10 %}
+                                        <tr>
+                                            
+                                            <td> {{row_.AY}} </td>
+                                            <td> {{row_.firstName}} </td>
+                                            <td> {{row_.lastName}} </td>
+                                            <td> {{row_.section}} </td>
+                                            <td> {{row_.program}} </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="predicted_IT">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Predicted Students (BSIT)</h3>
+                            <a href="{{ url_for('groupings_IT') }}">See all <span class="las la-arrow-right"></span></a>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive-cus">
+                                <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <td>A.Y.</td>
+                                            <td> First Name </td>
+                                            <td> Last Name </td>
+                                            <td> Section </td>
+                                            <td> Program</td>
+                                            <td> Main Role</td>   
+                                            <td> Secondary Role</td>                               
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for row_ in session.no_predicted_studs_data_10_IT %}
+                                        <tr>
+                                            
+                                            <td> {{row_.AY}} </td>
+                                            <td> {{row_.firstName}} </td>
+                                            <td> {{row_.lastName}} </td>
+                                            <td> {{row_.section}} </td>
+                                            {% if row_.program == 0%}
+                                            <td> BSIT </td>
+                                            {% endif %}
+
+                                            {% if row_.MAIN_ROLE == 0%}
+                                            <td> Lead Programmer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 1%}
+                                            <td> Project Manager </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 2%}
+                                            <td> UI/UX Designer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 3%}
+                                            <td> QA Engineer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 4%}
+                                            <td> Business Analyst </td>
+                                            {% endif %}
+                                               
+                                            {% if row_.SECOND_ROLE == 0%}
+                                            <td> Lead Programmer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 1%}
+                                            <td> Project Manager </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 2%}
+                                            <td> UI/UX Designer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 3%}
+                                            <td> QA Engineer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 4%}
+                                            <td> Business Analyst </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 5%}
+                                            <td> None </td>
+                                            {% endif %}
+
+                                            
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="predicted_CS">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Predicted Students (BSCS)</h3>
+                            <a href="{{ url_for('groupings_CS') }}">See all <span class="las la-arrow-right"></span></a>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive-cus">
+                                <table width="100%">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <td>A.Y.</td>
+                                            <td> First Name </td>
+                                            <td> Last Name </td>
+                                            <td> Section </td>
+                                            <td> Program</td>
+                                            <td> Main Role</td>   
+                                            <td> Secondary Role</td>                                
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for row_ in session.no_predicted_studs_data_10_CS %}
+                                        <tr>
+                                            
+                                            <td> {{row_.AY}} </td>
+                                            <td> {{row_.firstName}} </td>
+                                            <td> {{row_.lastName}} </td>
+                                            <td> {{row_.section}} </td>
+                                            {% if row_.program == 1%}
+                                            <td> BSCS </td>
+                                            {% endif %}
+
+                                            {% if row_.MAIN_ROLE == 0%}
+                                            <td> Lead Programmer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 1%}
+                                            <td> Project Manager </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 2%}
+                                            <td> UI/UX Designer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 3%}
+                                            <td> QA Engineer </td>
+                                            {% endif %}
+                                            {% if row_.MAIN_ROLE == 4%}
+                                            <td> Business Analyst </td>
+                                            {% endif %}
+                                               
+                                            {% if row_.SECOND_ROLE == 0%}
+                                            <td> Lead Programmer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 1%}
+                                            <td> Project Manager </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 2%}
+                                            <td> UI/UX Designer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 3%}
+                                            <td> QA Engineer </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 4%}
+                                            <td> Business Analyst </td>
+                                            {% endif %}
+                                            {% if row_.SECOND_ROLE == 5%}
+                                            <td> None </td>
+                                            {% endif %}
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
            </div>
         </main>
     </div>
 
-    {% if session.loggedin is defined and session.loggedin %}
+    {% if loggedin is defined and loggedin %}
         <script>
             Swal.fire({
                 icon: 'success',
