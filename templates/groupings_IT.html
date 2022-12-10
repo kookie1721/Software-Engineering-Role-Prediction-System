@@ -84,6 +84,8 @@
                             <th>Last Name</th>
                             <th>Section</th>
                             <th>Program</th>
+                            <th>Main Role</th>
+                            <th>Secondary Role</th>
                             <th>Academic Year</th>
                             <th></th>
                         </tr>
@@ -96,6 +98,41 @@
                             <td> {{row.lastName}} </td>
                             <td> {{row.section}} </td>
                             <td> {{row.program}} </td>
+                            
+                            {% if row.MAIN_ROLE == 0%}
+                                <td>Lead Programmer</td>
+                            {% endif %}
+                            {% if row.MAIN_ROLE == 1%}
+                                <td>Project Manager</td>
+                            {% endif %}
+                            {% if row.MAIN_ROLE == 2%}
+                                <td>UI/UX Designer</td>
+                            {% endif %}
+                            {% if row.MAIN_ROLE == 3%}
+                                <td>QA Engineer</td>
+                            {% endif %}
+                            {% if row.MAIN_ROLE == 4%}
+                                <td>Business Analyst</td>
+                            {% endif %}
+
+                            {% if row.SECOND_ROLE == 0%}
+                            <td>Lead Programmer</td>
+                            {% endif %}
+                            {% if row.SECOND_ROLE == 1%}
+                                <td>Project Manager</td>
+                            {% endif %}
+                            {% if row.SECOND_ROLE == 2%}
+                                <td>UI/UX Designer</td>
+                            {% endif %}
+                            {% if row.SECOND_ROLE == 3%}
+                                <td>QA Engineer</td>
+                            {% endif %}
+                            {% if row.SECOND_ROLE == 4%}
+                                <td>Business Analyst</td>
+                            {% endif %}
+                            {% if row.SECOND_ROLE == 5%}
+                                <td>None</td>
+                            {% endif %}
 
                             
                             <td> {{row.AY}} </td>
@@ -158,10 +195,11 @@
                     <br>
 
                     <select id="s_groupSize" name="s_groupSize" class="form-select" aria-label="Default select example" onchange="check();" required>
-                        <option selected value="">Select Group Size (Minimum-3 and Maximum-5):</option>
+                        <option selected value="">Select Group Size (Minimum-3 and Maximum-6):</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
+                        <option value="6">6</option>
                     </select>          
                     
                     <br>
@@ -183,6 +221,8 @@
                         <span id="r4" style="display: none;">QA Engineer</span>
                         <br>
                         <span id="r5" style="display: none;">Business Analyst</span>
+                        <br>
+                        <span id="r6" style="display: none;">Additional Role</span>
                     </p>
 
                 
@@ -332,6 +372,7 @@
             $('#r3').show();
             $('#r4').hide();
             $('#r5').hide();
+            $('#r6').hide();
           }
           else if($(this).val()==="4"){
             $('#rContainer').show();
@@ -340,6 +381,7 @@
             $('#r3').show();
             $('#r4').show();
             $('#r5').hide();
+            $('#r6').hide();
           }
           else if($(this).val()==="5"){
             $('#rContainer').show();
@@ -348,6 +390,16 @@
             $('#r3').show();
             $('#r4').show();
             $('#r5').show();
+            $('#r6').hide();
+          }
+          else if($(this).val()==="6"){
+            $('#rContainer').show();
+            $('#r1').show();
+            $('#r2').show();
+            $('#r3').show();
+            $('#r4').show();
+            $('#r5').show();
+            $('#r6').show();
           }
           else if($(this).val()===""){
             $('#rContainer').hide();

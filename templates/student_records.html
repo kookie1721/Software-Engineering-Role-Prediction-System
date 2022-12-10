@@ -71,6 +71,8 @@
                                 <th>Last Name</th>
                                 <th>Section</th>
                                 <th>Program</th>
+                                <th>Main Role</th>
+                                <th>Secondary Role</th>
                           
                                 <th></th>
                             </tr>
@@ -84,7 +86,41 @@
                                 <td> {{row.section}} </td>
                                 <td> {{row.program}} </td>
 
-                                
+                                {% if row.MAIN_ROLE == 0%}
+                                    <td>Lead Programmer</td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 1%}
+                                    <td>Project Manager</td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 2%}
+                                    <td>UI/UX Designer</td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 3%}
+                                    <td>QA Engineer</td>
+                                {% endif %}
+                                {% if row.MAIN_ROLE == 4%}
+                                    <td>Business Analyst</td>
+                                {% endif %}
+
+                                {% if row.SECOND_ROLE == 0%}
+                                <td>Lead Programmer</td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 1%}
+                                    <td>Project Manager</td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 2%}
+                                    <td>UI/UX Designer</td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 3%}
+                                    <td>QA Engineer</td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 4%}
+                                    <td>Business Analyst</td>
+                                {% endif %}
+                                {% if row.SECOND_ROLE == 5%}
+                                    <td>None</td>
+                                {% endif %}
+
 
                                 <td>
                                     <form action="/student_records/student_profile" method="POST">
