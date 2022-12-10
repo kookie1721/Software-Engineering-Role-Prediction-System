@@ -301,7 +301,7 @@ def dashboard_student():
     return render_template('dashboard_student.html', main_role=m_prediction, second_role = s_prediction)
     
 
-@app.route('/dashboard_student/start_repredict', methods =['GET', 'POST'])
+@app.route('/dashboard_student/start_repredict')
 def repredict():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT predict.id, users.firstName, users.lastName FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.userID = % s', (session['userid'],))
