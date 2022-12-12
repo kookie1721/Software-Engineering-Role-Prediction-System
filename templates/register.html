@@ -92,7 +92,7 @@
               <div class="fl iconBox"><i class="fa fa-id-card" aria-hidden="true"></i></div>
               <div class="fr">
                 <select name="program" id="program" class="textBox" style="width: 210px;" required>
-                  <option selected value="none"> </option>
+                  <option selected value=""> </option>
                   <option value="BSIT">BS in Information Technology</option>
                   <option value="BSCS">BS in Computer Science</option>
                 </select>
@@ -107,7 +107,7 @@
               <div class="fl iconBox"><i class="fa fa-id-card" aria-hidden="true"></i></div>
               <div class="fr">
                 <select name="section" id="section" class="textBox" style="width: 210px;" required>
-                  <option selected value="none"> </option>
+                  <option selected value=""> </option>
                   <option value="3A">3A</option>
                   <option value="3B">3B</option>
                   <option value="3C">3C</option>
@@ -138,10 +138,14 @@
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
+      const input1 = document.getElementById('program');
+      const input2 = document.getElementById('section');
       $('#userType').change(function(){
         if($(this).val()==="teacher"){
           $('#boxSec').hide();
           $('#boxProg').hide();
+          input1.removeAttribute('required');
+          input2.removeAttribute('required');
         }
         else if($(this).val()==="none"){
           $('#boxSec').hide();
@@ -150,6 +154,8 @@
         else{
           $('#boxSec').show();
           $('#boxProg').show();
+          input1.setAttribute('required', '');
+          input2.setAttribute('required', '');
         }
   
       }).change();

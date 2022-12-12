@@ -30,7 +30,7 @@ def login():
         session['email'] = request.form['email']
         session['password'] = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
+        user_record = cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
         user = cursor.fetchone()
 
         registered_studs_result = cursor.execute('SELECT * FROM users')
@@ -62,7 +62,7 @@ def login():
         session['no_predicted_studs_result_10_CS'] = predicted_studs_result_10_CS
         session['no_predicted_studs_data_10_CS'] = predicted_studs_data_10_CS
 
-        if user:
+        if user_record == 1:
             if user['userType'] == 'student':
                 session['loggedin'] = True
                 loggedin = True
@@ -254,6 +254,7 @@ def edit_profile():
 
 @app.route('/dashboard_student')
 def dashboard_student():
+
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'], ))
     user = cursor.fetchone()
@@ -320,6 +321,7 @@ def repredict():
 def start():
     GPA = 0
     mesage = ''
+    userID = session['userid']
     if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form :
         CC101 = request.form['CC101']
         CC102 = request.form['CC102']
@@ -354,7 +356,7 @@ def start():
         final_prog_avg = round(prog_avg, 2)
         
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT program FROM users WHERE id = % s', (session['userid'],))
+        cursor.execute('SELECT program FROM users WHERE id = % s', (userID,))
         program = cursor.fetchone()
 
         if program['program'] == 'BSIT':
@@ -8351,12 +8353,12 @@ def register():
         elif not firstName or not lastName or not userType or not password or not email:
             mesage = 'Please fill out the form !'
         else:
-            if(userType == 'student'):
+            if userType == 'student':
                 cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password, section, program,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
             else:
-                cursor.execute('INSERT INTO users (userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password, "none", "none",))
+                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password) VALUES (% s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
 
