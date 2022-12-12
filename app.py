@@ -941,6 +941,23 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result1_wo=result1_wo, mes_s=mes_s, mes=mes, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -1212,6 +1229,23 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
@@ -1533,6 +1567,23 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 #When the selected group size is 6
@@ -2148,6 +2199,23 @@ def groupings_CS():
                                                 
                                 no_of_groups = no_of_groups - 1
 
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
+
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 #When the selected group size is 4
@@ -2418,6 +2486,23 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
@@ -2739,6 +2824,23 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
                 
@@ -3349,6 +3451,23 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -3620,6 +3739,23 @@ def groupings_CS():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -3942,6 +4078,23 @@ def groupings_CS():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -4599,6 +4752,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
     
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -4870,6 +5040,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -5192,6 +5379,23 @@ def groupings_IT():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -5805,6 +6009,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -6076,6 +6297,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -6398,6 +6636,23 @@ def groupings_IT():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -7009,6 +7264,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
 
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -7280,6 +7552,23 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -7602,6 +7891,23 @@ def groupings_IT():
                                     remain_students = remain_students - 1
                                                 
                                 no_of_groups = no_of_groups - 1
+                            
+                            if no_of_groups == 0 and remain_students > 0:
+                                while remain_students > 0:
+
+                                    if group_iterator == 0 and remain_students > 0:
+                                        group_iterator = group_iterator + 1
+
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
+
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
+                                        mysql.connection.commit()
+
+                                    group_iterator = group_iterator - 1
+                                    remain_students = remain_students - 1
                     
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
