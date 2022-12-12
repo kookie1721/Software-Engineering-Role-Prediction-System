@@ -16,7 +16,12 @@
               <!-- Breadcrumb -->
               <nav style="padding: .1rem; margin: .5rem;" aria-label="breadcrumb" class="main-breadcrumb">
                 <ol class="breadcrumb">
+                  {% if is_predict == 0%}
+                  <li  class="breadcrumb-item"><a href="{{ url_for('dashboard_student_no_roles') }}">Home</a></li>
+                  {% endif %}
+                  {% if is_predict > 0%}
                   <li  class="breadcrumb-item"><a href="{{ url_for('dashboard_student') }}">Home</a></li>
+                  {% endif %}
                   <li class="breadcrumb-item active" aria-current="page">Student's Profile</li>
                 </ol>
               </nav>
@@ -170,6 +175,11 @@
                             {% if user_roles.MAIN_ROLE == 4%}
                             <p class="text-secondary mb-1">Business Analyst</p>
                             {% endif %}
+
+                            {% if not user_roles.MAIN_ROLE%}
+                            <p class="text-secondary mb-1">None (Kindly click the predict button to know your Main Role)</p>
+                            {% endif %}
+                            
                             
                         </div>
                       </div>
@@ -198,6 +208,10 @@
                             {% endif %}
                             {% if user_roles.SECOND_ROLE == 5%}
                             <p class="text-secondary mb-1">NONE</p>
+                            {% endif %}
+
+                            {% if not user_roles.SECOND_ROLE%}
+                            <p class="text-secondary mb-1">None (Kindly click the predict button to know your Secondary Role)</p>
                             {% endif %}
                         </div>
                       </div>

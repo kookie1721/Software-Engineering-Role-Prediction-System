@@ -299,6 +299,10 @@ def dashboard_student():
         return render_template('dashboard_student.html', has_record=has_record, main_role=m_prediction, second_role = s_prediction)
 
     return render_template('dashboard_student.html', main_role=m_prediction, second_role = s_prediction)
+
+@app.route('/dashboard_student_no_roles')
+def dashboard_student_no_roles():
+    return render_template('dashboard_student.html')
     
 
 @app.route('/dashboard_student/start_repredict')
