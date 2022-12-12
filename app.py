@@ -942,7 +942,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -1230,7 +1230,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -1568,7 +1568,7 @@ def groupings_CS():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -2199,7 +2199,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
 
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -2487,7 +2487,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
 
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -2825,7 +2825,7 @@ def groupings_CS():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -3452,7 +3452,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -3740,7 +3740,7 @@ def groupings_CS():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -4079,7 +4079,7 @@ def groupings_CS():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -4753,7 +4753,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -5041,7 +5041,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -5380,7 +5380,7 @@ def groupings_IT():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -6010,7 +6010,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -6298,7 +6298,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -6637,7 +6637,7 @@ def groupings_IT():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -7265,7 +7265,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -7553,7 +7553,7 @@ def groupings_IT():
                                     remain_students = remain_students - 1
 
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -7892,7 +7892,7 @@ def groupings_IT():
 
                                     remain_students = remain_students - 1
                                                 
-                                no_of_groups = no_of_groups - 1
+                                    no_of_groups = no_of_groups - 1
                             
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
