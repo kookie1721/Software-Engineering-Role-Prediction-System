@@ -154,6 +154,10 @@
                       <!--Make it dynamic-->
                       <br>
                       <h4 class="text-center">PREDICTED INFORMATION</h4>
+                      {% if not user_roles.MAIN_ROLE %}
+                          <p class="text-secondary text-center mb-1">(Kindly click the predict button to know your Main Role and Secondary Role)</p>
+                      {% endif %}
+                      
                       <hr>
                       <div class="row">
                         <div class="col-sm-3">
@@ -176,9 +180,7 @@
                             <p class="text-secondary mb-1">Business Analyst</p>
                             {% endif %}
 
-                            {% if not user_roles.MAIN_ROLE%}
-                            <p class="text-secondary mb-1">None (Kindly click the predict button to know your Main Role)</p>
-                            {% endif %}
+                      
                             
                             
                         </div>
@@ -210,9 +212,6 @@
                             <p class="text-secondary mb-1">NONE</p>
                             {% endif %}
 
-                            {% if not user_roles.SECOND_ROLE%}
-                            <p class="text-secondary mb-1">None (Kindly click the predict button to know your Secondary Role)</p>
-                            {% endif %}
                         </div>
                       </div>
 

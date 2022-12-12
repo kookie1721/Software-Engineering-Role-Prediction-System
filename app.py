@@ -670,11 +670,12 @@ def dashboard_teacher():
 
         return render_template('dashboard_teacher.html')
 
-#BSCS
+
+
+#groupings module BSCS
 @app.route('/groupings_CS', methods =['GET', 'POST'])
 def groupings_CS():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
     sections_CS = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSCS';")
     sections_CS = cursor.fetchall()
 
@@ -4327,7 +4328,7 @@ def groupings_CS():
 
     return render_template('groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo,students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
-#BSIT
+#groupings module BSIT
 @app.route('/groupings_IT', methods =['GET', 'POST'])
 def groupings_IT():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -4365,7 +4366,7 @@ def groupings_IT():
     result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and predict._group = 'none' ORDER BY predict.id DESC")
     students_wo_group = cursor.fetchall()
 
-    if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
+    if request.method == 'POST' and 'program' in request.form and 'section' in request.form:
         group_size = int(request.form['s_groupSize'])
         program = request.form['program']
         section = request.form['section']
@@ -4598,7 +4599,7 @@ def groupings_IT():
 
                                                 
                                 no_of_groups = no_of_groups - 1
-
+    
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return render_template('groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
                 #When the selected group size is 4
