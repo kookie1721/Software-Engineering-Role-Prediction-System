@@ -1,4 +1,5 @@
 from flask import Flask, flash, render_template, url_for, request, redirect, session
+from passlib.hash import sha256_crypt
 import pickle
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ app = Flask(__name__)
 dtc_model = pickle.load(open('main_final_model.pkl','rb'))
 dtc_second_model = pickle.load(open('second_final_model.pkl','rb'))
 
-app.secret_key = 'markies1'
+app.secret_key = 'markies17'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -21,16 +22,22 @@ app.config['MYSQL_DB'] = 'thesis_db'
 
 mysql = MySQL(app)
 
-@app.route('/')
+
+@app.route('/')   
+def landing_page():
+    if not session.get('loggedin'):
+        return render_template('index.html')
+
+@app.route('/Login')
 @app.route('/Home', methods =['GET', 'POST'])
 def login():
     mesage = ''
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
-
+        session.clear()
         session['email'] = request.form['email']
         session['password'] = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        user_record = cursor.execute('SELECT * FROM users WHERE email = % s AND password = % s', (session['email'], session['password'], ))
+        user_record = cursor.execute('SELECT * FROM users WHERE email = % s', (session['email'],))
         user = cursor.fetchone()
 
         registered_studs_result = cursor.execute('SELECT * FROM users')
@@ -62,83 +69,81 @@ def login():
         session['no_predicted_studs_result_10_CS'] = predicted_studs_result_10_CS
         session['no_predicted_studs_data_10_CS'] = predicted_studs_data_10_CS
 
-        if user_record == 1:
-            if user['userType'] == 'student':
-                session['loggedin'] = True
-                loggedin = True
-                session['userid'] = user['id']
-                session['lastName'] = user['lastName']
-                session['firstName'] = user['firstName']
-                session['email'] = user['email']
-                session['program'] = user['program']
-                session['section'] = user['section']
-                mesage = 'Logged in successfully !'
+        if sha256_crypt.verify(session['password'], user['password']):
+            if user_record == 1:
+                if user['userType'] == 'student':
+                    session['loggedin'] = True
+                    loggedin = True
+                    session['userid'] = user['id']
+                    session['lastName'] = user['lastName']
+                    session['firstName'] = user['firstName']
+                    session['email'] = user['email']
+                    session['program'] = user['program']
+                    session['section'] = user['section']
+                    mesage = 'Logged in successfully !'
+                    print("Hereeeeeee!!!!!!!------!!", session['userid'])
 
-                cursor.execute('SELECT * FROM predict WHERE userID = % s', (user['id'], ))
-                record = cursor.fetchone()
-                
-                if record:
-                    has_record = True
-                    m_prediction = record['MAIN_ROLE']
-                    s_prediction = record['SECOND_ROLE']
-
-                    if m_prediction == 0:
-                        m_prediction = 'Lead Programmer'
-                    elif m_prediction == 1:
-                        m_prediction = 'Project Manager'
-                    elif m_prediction == 2:
-                        m_prediction = 'UI/UX Designer'
-                    elif m_prediction == 3:
-                        m_prediction = 'Quality Assurance Engineer'
-                    elif m_prediction == 4:
-                        m_prediction = 'Business Analyst'
+                    cursor.execute('SELECT * FROM predict WHERE userID = % s', (user['id'], ))
+                    record = cursor.fetchone()
                     
-                    if s_prediction == 0:
-                        s_prediction = 'Lead Programmer'
-                    elif s_prediction == 1:
-                        s_prediction = 'Project Manager'
-                    elif s_prediction == 2:
-                        s_prediction = 'UI/UX Designer'
-                    elif s_prediction == 3:
-                        s_prediction = 'Quality Assurance Engineer'
-                    elif s_prediction == 4:
-                        s_prediction = 'Business Analyst'
-                    elif s_prediction == 5:
-                        s_prediction = 'NONE'
-                    return render_template('dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
-                else:
-                    has_record = False
-                    return render_template('dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record)
-            elif user['userType'] == 'teacher':
-                no = 0   
-                session['loggedin'] = True
-                loggedin = True
-                session['userid'] = user['id']
-                session['lastName'] = user['lastName']
-                session['firstName'] = user['firstName']
-                session['email'] = user['email']
-                session['program'] = user['program']
-                mesage = 'Logged in successfully !'
+                    if record:
+                        has_record = True
+                        m_prediction = record['MAIN_ROLE']
+                        s_prediction = record['SECOND_ROLE']
 
-                return render_template('dashboard_teacher.html', loggedin=loggedin, mesage = mesage) 
+                        if m_prediction == 0:
+                            m_prediction = 'Lead Programmer'
+                        elif m_prediction == 1:
+                            m_prediction = 'Project Manager'
+                        elif m_prediction == 2:
+                            m_prediction = 'UI/UX Designer'
+                        elif m_prediction == 3:
+                            m_prediction = 'Quality Assurance Engineer'
+                        elif m_prediction == 4:
+                            m_prediction = 'Business Analyst'
+                        
+                        if s_prediction == 0:
+                            s_prediction = 'Lead Programmer'
+                        elif s_prediction == 1:
+                            s_prediction = 'Project Manager'
+                        elif s_prediction == 2:
+                            s_prediction = 'UI/UX Designer'
+                        elif s_prediction == 3:
+                            s_prediction = 'Quality Assurance Engineer'
+                        elif s_prediction == 4:
+                            s_prediction = 'Business Analyst'
+                        elif s_prediction == 5:
+                            s_prediction = 'NONE'
+                        return render_template('dashboard_student_new.html', loggedin=loggedin, mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
+                    else:
+                        has_record = False
+                        return render_template('dashboard_student_new.html', loggedin=loggedin, mesage = mesage, has_record=has_record)
+                elif user['userType'] == 'teacher':
+                    no = 0   
+                    session['loggedin'] = True
+                    loggedin = True
+                    session['userid'] = user['id']
+                    session['lastName'] = user['lastName']
+                    session['firstName'] = user['firstName']
+                    session['email'] = user['email']
+                    session['program'] = user['program']
+                    mesage = 'Logged in successfully !'
+
+                    return render_template('dashboard_teacher.html', loggedin=loggedin, mesage = mesage) 
         else:
             mesage = 'Email or Password is incorrect!'
+
     return render_template('index.html', mesage = mesage)
+
 
 @app.route('/dashboard_student/profile')
 def view_profile():
+    print("Hereeeeeee!!!!!!!------!! view profile", session['userid'])
+    
+    user_id = session['userid']
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'],))
+    cursor.execute('SELECT * FROM users WHERE id = % s', (user_id,))
     user = cursor.fetchone()
-
-    session['loggedin'] = True
-    loggedin = True
-    session['userid'] = user['id']
-    session['lastName'] = user['lastName']
-    session['firstName'] = user['firstName']
-    session['email'] = user['email']
-    session['program'] = user['program']
-    session['section'] = user['section']
 
     is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
     user_roles = cursor.fetchone()
@@ -297,9 +302,9 @@ def dashboard_student():
     
     if record:
         has_record = True
-        return render_template('dashboard_student.html', has_record=has_record, main_role=m_prediction, second_role = s_prediction)
+        return render_template('dashboard_student_new.html', has_record=has_record, main_role=m_prediction, second_role = s_prediction)
 
-    return render_template('dashboard_student.html', main_role=m_prediction, second_role = s_prediction)
+    return render_template('dashboard_student_new.html', main_role=m_prediction, second_role = s_prediction)
 
 @app.route('/dashboard_student_no_roles')
 def dashboard_student_no_roles():
@@ -8322,7 +8327,8 @@ def logout():
     session.pop('no_predicted_studs_data_10_IT', None)
     session.pop('no_predicted_studs_result_10_CS', None)
     session.pop('no_predicted_studs_data_10_CS', None)
-    return redirect(url_for('login'))
+    session.clear()
+    return render_template('index.html')
 
 @app.route('/register', methods =['GET', 'POST'])
 def register():
@@ -8337,6 +8343,8 @@ def register():
         userType = request.form['userType']
         d1 = datetime.datetime.now()
         AY = ""
+        
+        hash_password = sha256_crypt.encrypt(password)
 
         if d1.month >= 7 and d1.month <= 12:
             AY = str(d1.year) + "-" + str(d1.year + 1) 
@@ -8354,11 +8362,11 @@ def register():
             mesage = 'Please fill out the form !'
         else:
             if userType == 'student':
-                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password, section, program,))
+                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password, section, program) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, hash_password, section, program,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
             else:
-                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password) VALUES (% s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, password,))
+                cursor.execute('INSERT INTO users (AY, userType, firstName, lastName, email, password) VALUES (% s, % s, % s, % s, % s, % s)', (AY, userType, firstName, lastName, email, hash_password,))
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
 

@@ -19,7 +19,7 @@
 
     <div class="sidebar">
         <div class="sidebar-brand">
-            <h2><span class="las la-user-tie"></span> <span>INSTRUCTOR</span></h2>
+            <h2><span class="las la-user-tie"></span> <span>STUDENT</span></h2>
         </div>
         <div class="sidebar-menu">
         <ul>    
@@ -29,20 +29,16 @@
                 </li>
 
                 <li>
-                    <a href="{{ url_for('student_records') }}"><span class="las la-users"></span>
-                    <span>Student Records</span></a>
+                    <a href="{{ url_for('view_profile') }}"><span class="las la-users"></span>
+                    <span>User Profile</span></a>
                 </li>
 
                 <li>
                     <a href="{{ url_for('groupings_IT') }}"><span class="las la-users-cog"></span>
-                    <span>Groupings (BSIT)</span></a>
+                    <span>About</span></a>
                 </li>
 
-                <li>
-                    <a href="{{ url_for('groupings_CS') }}"><span class="las la-users-cog"></span>
-                    <span>Groupings (BSCS)</span></a>
-                </li>
-                
+              
             </ul>
         </div>
     </div>
@@ -63,7 +59,7 @@
 
         <main>
            <div class="container">
-            <h4>Welcome Instructor!</h4>
+            <h4>Welcome Student!</h4>
             <div class="cards">
                 <div class="card-single">
                     <div style="color: white;">
