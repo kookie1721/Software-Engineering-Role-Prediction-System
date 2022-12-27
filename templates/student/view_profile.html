@@ -154,7 +154,7 @@
                       <!--Make it dynamic-->
                       <br>
                       <h4 class="text-center">PREDICTED INFORMATION</h4>
-                      {% if not user_roles.MAIN_ROLE %}
+                      {% if is_predict == 0%}
                           <p class="text-secondary text-center mb-1">(Kindly click the predict button to know your Main Role and Secondary Role)</p>
                       {% endif %}
                       
