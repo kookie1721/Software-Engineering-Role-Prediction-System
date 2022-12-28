@@ -399,14 +399,34 @@ def start():
         if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form:
              cursor.execute('INSERT INTO predict (userID, program, comprog1, comprog2, intro_computing, IM, OOP, HCI, DSA, comprog1_units, comprog2_units, intro_computing_units, IM_units, OOP_units, HCI_units, DSA_units, programming_avg, gpa) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s )', (session['userid'], f_program, CC101, CC102, ITC, IM, OOP, HCI, DSA, CC101_units, CC102_units, ITC_units, IM_units, OOP_units, HCI_units, DSA_units, final_prog_avg, final_GPA, ))
              mysql.connection.commit()
-             return render_template('student/result_gpa.html', GPA=final_GPA)
+             return redirect(url_for('result_gpa'))
         else:
             mesage = 'Something went wrong!'
-            return render_template('student/result_gpa.html', mesage=mesage)
+            return redirect(url_for('result_gpa'))
 
     elif request.method == 'POST':
         mesage = 'something went wrong!'
     return render_template('student/start.html', mesage=mesage)
+
+@app.route('/dashboard_student/gpa')
+def result_gpa():
+    userID = session['userid']
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    student = cursor.execute('SELECT * FROM predict WHERE userID = % s', (userID,))
+    grades = cursor.fetchone()
+
+    if student > 0:
+        CC101 = grades['comprog1']
+        CC102 = grades['comprog2']
+        ITC = grades['intro_computing']
+        IM = grades['IM']
+        OOP = grades['OOP']
+        HCI = grades['HCI']
+        DSA = grades['DSA']
+        final_GPA = grades['gpa']
+        return render_template('student/result_gpa.html', GPA=final_GPA, CC101=CC101, CC102= CC102, ITC=ITC, IM=IM, OOP=OOP, HCI=HCI, DSA=DSA)
+
+    return render_template('student/result_gpa.html')
 
 
 @app.route('/dashboard_student/pt', methods =['GET', 'POST'])
@@ -419,100 +439,100 @@ def pt():
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENFJ = % s WHERE userID = % s', (ENFJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ENFP':
             ENFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENFP = % s WHERE userID = % s', (ENFP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ENTJ':
             ENTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENTJ = % s WHERE userID = % s', (ENTJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ENTP':
             ENTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENTP = % s WHERE userID = % s', (ENTP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ESFJ':
             ESFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESFJ = % s WHERE userID = % s', (ESFJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ESFP':
             ESFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESFP = % s WHERE userID = % s', (ESFP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ESTJ':
             ESTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESTJ = % s WHERE userID = % s', (ESTJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ESTP':
             ESTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESTP = % s WHERE userID = % s', (ESTP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'INFJ':
             INFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INFJ = % s WHERE userID = % s', (INFJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'INFP':
             INFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INFP = % s WHERE userID = % s', (INFP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'INTJ':
             INTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INTJ = % s WHERE userID = % s', (INTJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'INTP':
             INTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INTP = % s WHERE userID = % s', (INTP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ISFJ':
             ISFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISFJ = % s WHERE userID = % s', (ISFJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ISFP':
             ISFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISFP = % s WHERE userID = % s', (ISFP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ISTJ':
             ISTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISTJ = % s WHERE userID = % s', (ISTJ, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         elif personality_type == 'ISTP':
             ISTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISTP = % s WHERE userID = % s', (ISTP, session['userid'], ))
             mysql.connection.commit()
-            return render_template('student/result_pt.html', pt=personality_type)
+            return redirect(url_for('mt'))
         else:
              mesage = 'something went wrong!'
-             return render_template('student/result_pt.html', mesage = mesage)
+             return redirect(url_for('mt'))
     
     elif request.method == 'POST':
         mesage = 'something went wrong!'
@@ -554,7 +574,7 @@ def mt():
             if 'visual' in MI_list:  
                 cursor.execute('UPDATE predict SET VISUAL = % s WHERE userID = % s', (1, session['userid'], ))
                 mysql.connection.commit()
-            return render_template('student/result_mt.html', mi_li=MI_list)
+            return redirect(url_for('result_predict'))
     elif request.method == 'POST':
         mesage = 'Select at least one multiple intelligence!!'
     return render_template('student/mt.html', mesage=mesage)

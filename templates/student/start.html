@@ -28,7 +28,7 @@
               <!-- /Breadcrumb -->
         
               <div class="row gutters-sm">
-                <div class="container">
+                <div class="container ">
                   <div class="card mb-3">
                     <div class="card-body">
                         <h4 class="text-center">Welcome IT/CS Fam</h4>
@@ -36,11 +36,11 @@
                         <p class="text-center">These fields will be used by the system to compute the GPA.</p>
                         <hr>
                         <form method="POST" action="{{url_for('start')}}">
-                            <div class="row">
+                            <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Computer Programming I</h6>
                                 </div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-5">
                                     <select class="form-control" name="CC101"required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -57,11 +57,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Computer Programming II</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="CC102" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -78,11 +78,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Introduction to Computing</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="ITC" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -99,11 +99,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Information Management</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="IM" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -120,11 +120,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Object Oriented Programming</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="OOP" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -141,11 +141,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Human Computer Interaction</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="HCI" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -162,11 +162,11 @@
                                 </div>
                               </div>
                               <hr>
-                              <div class="row">
+                              <div class="row d-flex justify-content-center">
                                 <div class="col-sm-3">
                                   <h6 class="mb-0">Data Structure and Algorithms</h6>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
+                                <div class="col-sm-5 text-secondary">
                                     <select class="form-control" name="DSA" required>
                                         <option selected value=""> </option>
                                         <option value="1"> 1 </option>
@@ -185,11 +185,11 @@
                               <hr>
                               
                               <div class="row">
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 d-flex justify-content-center">
                                     {% if session['repredict'] is defined and session['repredict'] %}
                                         <button type="submit" name="submit" class="btn btn-success ">Submit</button>
                                     {% else %}
-                                        <a href="{{ url_for('dashboard_student_no_roles') }}" class="btn btn-danger">Cancel</a>
+                                        <a href="{{ url_for('dashboard_student_no_roles') }}" class="btn btn-danger me-3">Cancel</a>
                                         <button type="submit" name="submit" class="btn btn-success ">Submit</button>
                                     {% endif %}
                                 </div>
