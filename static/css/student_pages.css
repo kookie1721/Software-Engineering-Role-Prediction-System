@@ -23,9 +23,6 @@ input[type="checkbox"] + label {
     font: 14px/20px 'Open Sans', Arial, sans-serif;
     color: #1a202c;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
 }
 
 input[type="checkbox"] + label:last-child { margin-bottom: 0; }
