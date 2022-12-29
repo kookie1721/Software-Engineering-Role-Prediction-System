@@ -9,6 +9,7 @@ import MySQLdb.cursors
 import re
 import datetime
 from flask_debugtoolbar import DebugToolbarExtension
+from waitress import serve
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'm17'
@@ -8754,6 +8755,14 @@ def register():
     return render_template('register.html', mesage = mesage)
 
 
+#change the mode when you want to run the flask app on development server or production server.
+#mode = "prod" or mode = "dev"
+
+mode = "prod"
+
 if __name__ == "__main__":
-    app.run(threaded=True)
+    if mode == "dev":
+        app.run(host="0.0.0.0", port=8080)
+    else:
+        serve(app, host="0.0.0.0", port=8080, threads = 7)
 
