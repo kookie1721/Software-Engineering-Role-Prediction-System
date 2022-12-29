@@ -41,41 +41,53 @@
                           <h4>{{session.firstName}} {{session.lastName}}</h4>
                           {% if user_roles.MAIN_ROLE == 0%}
                           <p class="text-secondary mb-1">Main Role: Lead Programmer</p>
-                          {% endif %}
-                          {% if user_roles.MAIN_ROLE == 1%}
+                          
+                          {% elif user_roles.MAIN_ROLE == 1%}
                           <p class="text-secondary mb-1">Main Role: Project Manager</p>
-                          {% endif %}
-                          {% if user_roles.MAIN_ROLE == 2%}
+                         
+                          {% elif user_roles.MAIN_ROLE == 2%}
                           <p class="text-secondary mb-1">Main Role: UI/UX Designer</p>
-                          {% endif %}
-                          {% if user_roles.MAIN_ROLE == 3%}
+                        
+                          {% elif user_roles.MAIN_ROLE == 3%}
                           <p class="text-secondary mb-1">Main Role: QA Engineer</p>
-                          {% endif %}
-                          {% if user_roles.MAIN_ROLE == 4%}
+                         
+                          {% elif user_roles.MAIN_ROLE == 4%}
                           <p class="text-secondary mb-1">Main Role: Business Analyst</p>
+
+                          {% else %}
+                          <p class="text-secondary mb-1">Main Role: not yet predicted</p>
+
                           {% endif %}
                           
                           
                           {% if user_roles.SECOND_ROLE == 0%}
                           <p class="text-muted font-size-sm">Secondary Role: Lead Programmer</p>
-                          {% endif %}
-                          {% if user_roles.SECOND_ROLE == 1%}
+                          
+                          {% elif user_roles.SECOND_ROLE == 1%}
                           <p class="text-muted font-size-sm">Secondary Role: Project Manager</p>
-                          {% endif %}
-                          {% if user_roles.SECOND_ROLE == 2%}
+                          
+                          {% elif user_roles.SECOND_ROLE == 2%}
                           <p class="text-secondary mb-1">Secondary Role: UI/UX Designer</p>
-                          {% endif %}
-                          {% if user_roles.SECOND_ROLE == 3%}
+                          
+                          {% elif user_roles.SECOND_ROLE == 3%}
                           <p class="text-secondary mb-1">Secondary Role: QA Engineer</p>
-                          {% endif %}
-                          {% if user_roles.SECOND_ROLE == 4%}
+                          
+                          {% elif user_roles.SECOND_ROLE == 4%}
                           <p class="text-secondary mb-1">Secondary Role: Business Analyst</p>
-                          {% endif %}
-                          {% if user_roles.SECOND_ROLE == 5%}
+                         
+                          {% elif user_roles.SECOND_ROLE == 5%}
                           <p class="text-secondary mb-1">Secondary Role: NONE</p>
+                          
+                          {% else %}
+                          <p class="text-secondary mb-1">Secondary Role: not yet predicted</p>
                           {% endif %}
 
-                          <p class="text-secondary mb-1">Group: {{user_roles._group}}</p>
+                          
+                          {% if user_roles._group %}
+                            <p class="text-secondary mb-1">Group: {{user_roles._group}}</p>
+                          {% else %}
+                            <p class="text-secondary mb-1">Group: None</p>
+                          {% endif %}
                         
                         </div>
                       </div>
@@ -144,18 +156,20 @@
                         <div class="col-sm-9 text-secondary">
                             {% if user_roles.MAIN_ROLE == 0%}
                             <p class="text-secondary mb-1">Lead Programmer</p>
-                            {% endif %}
-                            {% if user_roles.MAIN_ROLE == 1%}
+                            
+                            {% elif user_roles.MAIN_ROLE == 1%}
                             <p class="text-secondary mb-1">Project Manager</p>
-                            {% endif %}
-                            {% if user_roles.MAIN_ROLE == 2%}
+                            
+                            {% elif user_roles.MAIN_ROLE == 2%}
                             <p class="text-secondary mb-1">UI/UX Designer</p>
-                            {% endif %}
-                            {% if user_roles.MAIN_ROLE == 3%}
+                            
+                            {% elif user_roles.MAIN_ROLE == 3%}
                             <p class="text-secondary mb-1">QA Engineer</p>
-                            {% endif %}
-                            {% if user_roles.MAIN_ROLE == 4%}
+                            
+                            {% elif user_roles.MAIN_ROLE == 4%}
                             <p class="text-secondary mb-1">Business Analyst</p>
+                            {% else %}
+                            <p class="text-secondary mb-1">not yet predicted</p>
                             {% endif %}
                             
                         </div>
@@ -170,21 +184,23 @@
                         <div class="col-sm-9 text-secondary">
                             {% if user_roles.SECOND_ROLE == 0%}
                             <p class="text-muted font-size-sm">Lead Programmer</p>
-                            {% endif %}
-                            {% if user_roles.SECOND_ROLE == 1%}
+                            
+                            {% elif user_roles.SECOND_ROLE == 1%}
                             <p class="text-muted font-size-sm">Project Manager</p>
-                            {% endif %}
-                            {% if user_roles.SECOND_ROLE == 2%}
+                            
+                            {% elif user_roles.SECOND_ROLE == 2%}
                             <p class="text-secondary mb-1">UI/UX Designer</p>
-                            {% endif %}
-                            {% if user_roles.SECOND_ROLE == 3%}
+                            
+                            {% elif user_roles.SECOND_ROLE == 3%}
                             <p class="text-secondary mb-1">QA Engineer</p>
-                            {% endif %}
-                            {% if user_roles.SECOND_ROLE == 4%}
+                           
+                            {% elif user_roles.SECOND_ROLE == 4%}
                             <p class="text-secondary mb-1">Business Analyst</p>
-                            {% endif %}
-                            {% if user_roles.SECOND_ROLE == 5%}
+                          
+                            {% elif user_roles.SECOND_ROLE == 5%}
                             <p class="text-secondary mb-1">NONE</p>
+                            {% else %}
+                            <p class="text-secondary mb-1">not yet predicted</p>
                             {% endif %}
                         </div>
                       </div>

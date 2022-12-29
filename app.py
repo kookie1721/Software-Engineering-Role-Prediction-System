@@ -8,21 +8,18 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 import datetime
-
-#Notes:
-#Change the UI of the students pages
-#Done for the grades page
-#Do the rest! (PT,MT,RESULT pages)
+from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'm17'
+app.debug = True
+
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 dtc_model = pickle.load(open('main_final_model.pkl','rb'))
 dtc_second_model = pickle.load(open('second_final_model.pkl','rb'))
-
-app.secret_key = 'm17'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -39,7 +36,7 @@ def landing_page():
     return render_template('index.html')
 
 @app.route('/Login')
-@app.route('/Home', methods =['GET', 'POST'])
+@app.route('/Home', methods =['POST', 'GET'])
 def login():
     mesage = ''
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
@@ -50,10 +47,10 @@ def login():
         user_record = cursor.execute('SELECT * FROM users WHERE email = % s', (email,))
         user = cursor.fetchone()
 
-        registered_studs_result = cursor.execute('SELECT * FROM users')
+        registered_studs_result = cursor.execute('SELECT * FROM users WHERE userType = "student"')
         registered_studs_data = cursor.fetchall()
 
-        registered_studs_result_10 = cursor.execute('SELECT * FROM users ORDER BY id DESC LIMIT 10')
+        registered_studs_result_10 = cursor.execute('SELECT * FROM users WHERE userType = "student" ORDER BY id DESC LIMIT 10')
         registered_studs_data_10 = cursor.fetchall()
 
         session['no_registered_studs_result'] = registered_studs_result
@@ -124,9 +121,12 @@ def login():
                                 s_prediction = 'Business Analyst'
                             elif s_prediction == 5:
                                 s_prediction = 'NONE'
+                            
+                            cursor.close()
                             return render_template('student/dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record, main_role=m_prediction, second_role=s_prediction)
                         else:
                             has_record = False
+                            cursor.close()
                             return render_template('student/dashboard_student.html', loggedin=loggedin, mesage = mesage, has_record=has_record)
                     elif user['userType'] == 'teacher':
                         no = 0   
@@ -138,11 +138,14 @@ def login():
                         session['email'] = user['email']
                         session['program'] = user['program']
                         mesage = 'Logged in successfully !'
-
+                        cursor.close()
                         return render_template('teacher/dashboard_teacher.html', loggedin=loggedin, mesage = mesage) 
+            else:
+                mesage = 'Email or Password is incorrect!'
+
         else:
             mesage = 'Email or Password is incorrect!'
-            
+
     return render_template('index.html', mesage = mesage)
 
 
@@ -165,6 +168,7 @@ def view_profile():
     is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
     user_roles = cursor.fetchone()
 
+    cursor.close()
     return render_template('student/view_profile.html', user_roles=user_roles, is_predict=is_predict)
 
 @app.route('/student_records/student_profile', methods=['GET', 'POST'])
@@ -188,6 +192,7 @@ def view_student():
         is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
         user_roles = cursor.fetchone()
 
+        cursor.close()
         return render_template('teacher/view_student.html', student_records_page=student_records_page, user_roles=user_roles, is_predict=is_predict)
 
     return render_template('teacher/view_student.html', student_records_page=student_records_page, user_roles=user_roles, is_predict=is_predict)
@@ -214,6 +219,7 @@ def view_student_CS():
         is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
         user_roles = cursor.fetchone()
 
+        cursor.close()
         return render_template('teacher/view_student.html', groupings_cs_page=groupings_cs_page, user_roles=user_roles, is_predict=is_predict)
 
     return render_template('teacher/view_student.html', groupings_cs_page=groupings_cs_page, user_roles=user_roles, is_predict=is_predict)
@@ -240,11 +246,12 @@ def view_student_IT():
         is_predict = cursor.execute('SELECT * FROM predict WHERE predict.userID = % s', (session['userid'], ))
         user_roles = cursor.fetchone()
 
+        cursor.close()
         return render_template('teacher/view_student.html', groupings_it_page=groupings_it_page, user_roles=user_roles, is_predict=is_predict)
 
     return render_template('teacher/view_student.html', groupings_it_page=groupings_it_page, user_roles=user_roles, is_predict=is_predict)
 
-@app.route('/dashboard_student/edit_profile', methods =['GET', 'POST'])
+@app.route('/dashboard_student/edit_profile', methods =['POST', 'GET'])
 def edit_profile():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM users WHERE id = % s', (session['userid'], ))
@@ -273,8 +280,11 @@ def edit_profile():
 
         flash("Basic information was edited successfully.")
         mes = "Information was edited successfully."
+
+        cursor.close()
         return redirect(url_for('view_profile'))
 
+    cursor.close()
     return render_template('student/edit_profile.html', user_roles=user_roles, is_predict=is_predict)
 
 @app.route('/dashboard_student')
@@ -325,10 +335,13 @@ def dashboard_student():
             s_prediction = 'Business Analyst'
         elif s_prediction == 5:
             s_prediction = 'NONE'
+        
+        cursor.close()
         return render_template('student/dashboard_student.html', has_record=has_record, main_role=m_prediction, second_role = s_prediction)
     else: 
         has_record = False
         session['has_record'] = False
+        cursor.close()
         return render_template('student/dashboard_student.html', has_record=has_record)
     
 @app.route('/dashboard_student_no_roles')
@@ -346,10 +359,10 @@ def repredict():
     cursor.execute('DELETE FROM predict WHERE id = % s', (del_user['id'], ))
     mysql.connection.commit()
 
-
+    cursor.close()
     return redirect(url_for('start'))
 
-@app.route('/dashboard_student/start', methods =['GET', 'POST'])
+@app.route('/dashboard_student/start', methods =['POST', 'GET'])
 def start():
     GPA = 0
     mesage = ''
@@ -399,13 +412,16 @@ def start():
         if request.method == 'POST'  and 'CC101' in request.form and 'CC102' in request.form  and 'ITC' in request.form  and 'IM' in request.form and 'OOP' in request.form  and 'HCI' in request.form and 'DSA' in request.form:
              cursor.execute('INSERT INTO predict (userID, program, comprog1, comprog2, intro_computing, IM, OOP, HCI, DSA, comprog1_units, comprog2_units, intro_computing_units, IM_units, OOP_units, HCI_units, DSA_units, programming_avg, gpa) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s )', (session['userid'], f_program, CC101, CC102, ITC, IM, OOP, HCI, DSA, CC101_units, CC102_units, ITC_units, IM_units, OOP_units, HCI_units, DSA_units, final_prog_avg, final_GPA, ))
              mysql.connection.commit()
+             cursor.close()
              return redirect(url_for('result_gpa'))
         else:
             mesage = 'Something went wrong!'
+            cursor.close()
             return redirect(url_for('result_gpa'))
 
     elif request.method == 'POST':
         mesage = 'something went wrong!'
+
     return render_template('student/start.html', mesage=mesage)
 
 @app.route('/dashboard_student/gpa')
@@ -424,12 +440,13 @@ def result_gpa():
         HCI = grades['HCI']
         DSA = grades['DSA']
         final_GPA = grades['gpa']
+        cursor.close()
         return render_template('student/result_gpa.html', GPA=final_GPA, CC101=CC101, CC102= CC102, ITC=ITC, IM=IM, OOP=OOP, HCI=HCI, DSA=DSA)
 
     return render_template('student/result_gpa.html')
 
 
-@app.route('/dashboard_student/pt', methods =['GET', 'POST'])
+@app.route('/dashboard_student/pt', methods =['POST', 'GET'])
 def pt():
     mesage = ''
     if request.method == 'POST'  and  'personality' in request.form :
@@ -439,96 +456,112 @@ def pt():
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENFJ = % s WHERE userID = % s', (ENFJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ENFP':
             ENFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENFP = % s WHERE userID = % s', (ENFP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ENTJ':
             ENTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENTJ = % s WHERE userID = % s', (ENTJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ENTP':
             ENTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ENTP = % s WHERE userID = % s', (ENTP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ESFJ':
             ESFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESFJ = % s WHERE userID = % s', (ESFJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ESFP':
             ESFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESFP = % s WHERE userID = % s', (ESFP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ESTJ':
             ESTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESTJ = % s WHERE userID = % s', (ESTJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ESTP':
             ESTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ESTP = % s WHERE userID = % s', (ESTP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'INFJ':
             INFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INFJ = % s WHERE userID = % s', (INFJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'INFP':
             INFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INFP = % s WHERE userID = % s', (INFP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'INTJ':
             INTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INTJ = % s WHERE userID = % s', (INTJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'INTP':
             INTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET INTP = % s WHERE userID = % s', (INTP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ISFJ':
             ISFJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISFJ = % s WHERE userID = % s', (ISFJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ISFP':
             ISFP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISFP = % s WHERE userID = % s', (ISFP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ISTJ':
             ISTJ = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISTJ = % s WHERE userID = % s', (ISTJ, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         elif personality_type == 'ISTP':
             ISTP = 1
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('UPDATE predict SET ISTP = % s WHERE userID = % s', (ISTP, session['userid'], ))
             mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('mt'))
         else:
              mesage = 'something went wrong!'
@@ -539,7 +572,7 @@ def pt():
     return render_template('student/pt.html', mesage = mesage)
 
 
-@app.route('/dashboard_student/mt', methods =['GET', 'POST'])
+@app.route('/dashboard_student/mt', methods =['POST', 'GET'])
 def mt():
     mesage = ''
     if request.method == 'POST'  and  'mul_int' in request.form :
@@ -574,6 +607,7 @@ def mt():
             if 'visual' in MI_list:  
                 cursor.execute('UPDATE predict SET VISUAL = % s WHERE userID = % s', (1, session['userid'], ))
                 mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('result_predict'))
     elif request.method == 'POST':
         mesage = 'Select at least one multiple intelligence!!'
@@ -591,7 +625,7 @@ def predict():
     return render_template('student/predict.html')
 
 #result page
-@app.route('/dashboard_student/result_predict', methods =['GET', 'POST'])
+@app.route('/dashboard_student/result_predict', methods =['POST', 'GET'])
 def result_predict():
     newdata=dict()
     m_prediction = 0
@@ -693,15 +727,17 @@ def result_predict():
         print('\n\nMain Role Prediction: ',m_prediction,'\n\n')
         print('\n\nSecond Role Prediction: ',s_prediction,'\n\n')
 
+    cursor.close()
     return render_template('student/result_predict.html', m_prediction = m_prediction, s_prediction = s_prediction)
 
 @app.route('/dashboard_teacher')
 def dashboard_teacher():
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        registered_studs_result = cursor.execute('SELECT * FROM users')
+        registered_studs_result = cursor.execute('SELECT * FROM users WHERE userType = "student"')
         registered_studs_data = cursor.fetchall()
 
-        registered_studs_result_10 = cursor.execute('SELECT * FROM users ORDER BY id DESC LIMIT 10')
+        registered_studs_result_10 = cursor.execute('SELECT * FROM users WHERE userType = "student" ORDER BY id DESC LIMIT 10')
         registered_studs_data_10 = cursor.fetchall()
 
         session['no_registered_studs_result'] = registered_studs_result
@@ -727,12 +763,94 @@ def dashboard_teacher():
         session['no_predicted_studs_result_10_CS'] = predicted_studs_result_10_CS
         session['no_predicted_studs_data_10_CS'] = predicted_studs_data_10_CS
 
+        cursor.close()
         return render_template('teacher/dashboard_teacher.html')
 
 
+@app.route('/groupings_CS/group_result')
+def groupings_CS_result():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    sections_CS = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSCS';")
+    sections_CS = cursor.fetchall()
+
+    result1 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' ORDER BY predict.id DESC")
+    students_BSCS3A = cursor.fetchall()
+
+    result2 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' ORDER BY predict.id DESC")
+    students_BSCS3B = cursor.fetchall()
+
+    result3 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' ORDER BY predict.id DESC")
+    students_BSCS3C = cursor.fetchall()
+
+    result4 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' ORDER BY predict.id DESC")
+    students_BSCS3D = cursor.fetchall()
+
+    result1_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3A_wo = cursor.fetchall()
+
+    result2_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3B_wo = cursor.fetchall()
+
+    result3_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3C_wo = cursor.fetchall()
+
+    result4_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and users.section = '3D' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSCS3D_wo = cursor.fetchall()
+
+    result9 = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' ORDER BY predict.id DESC")
+    students_all = cursor.fetchall()
+
+    result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_wo_group = cursor.fetchall()
+
+    if session['g_size'] == 3:
+        mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+    elif session['g_size'] == 4:
+        mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+    elif session['g_size'] == 5:
+        mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+    elif session['g_size'] == 6:
+        mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+
 
 #groupings module BSCS
-@app.route('/groupings_CS', methods =['GET', 'POST'])
+@app.route('/groupings_CS', methods =['POST', 'GET'])
 def groupings_CS():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     sections_CS = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSCS';")
@@ -767,13 +885,13 @@ def groupings_CS():
 
     result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '1' and predict._group = 'none' ORDER BY predict.id DESC")
     students_wo_group = cursor.fetchall()
-    if request.method == 'POST'  and 'program' in request.form and 'section' in request.form:
+    if 'program' in request.form and 'section' in request.form:
         group_size = int(request.form['s_groupSize'])
         program = request.form['program']
         section = request.form['section']
 
         if program == 'BSCS' and section == '3A':
-
+            session['section_no'] = 1
             if result1 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3A) or they might not have predicted their main and secondary roles yet!"
                 return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, students_wo_group = students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -784,8 +902,10 @@ def groupings_CS():
             if result_check == 0:
                 mes_no_studs = "Students in this program and section have already been grouped."
                 return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -851,6 +971,7 @@ def groupings_CS():
                                 mes='unexpected error occured!'
 
                             no_of_groups = no_of_groups - 1
+                            
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
                         while no_of_groups > 0:
                             group_iterator = group_iterator + 1
@@ -892,7 +1013,8 @@ def groupings_CS():
                             else:
                                 mes='unexpected error occured!'
 
-                            no_of_groups = no_of_groups - 1     
+                            no_of_groups = no_of_groups - 1 
+                               
                     else:
                         mes="dasdsadsad"
                         remain_students = int(len(students_BSCS3A) % group_size)
@@ -941,7 +1063,8 @@ def groupings_CS():
                                     mes='unexpected error occured!'
 
                                                 
-                                no_of_groups = no_of_groups - 1    
+                                no_of_groups = no_of_groups - 1  
+                                 
                         else:
                             mes="pass me cok"
                             no_of_groups_inner = no_of_groups
@@ -1017,11 +1140,13 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -1037,6 +1162,7 @@ def groupings_CS():
                     result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
                     student_QA_a = cursor.fetchall()
 
+
                     result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
                     student_LP_s_a = cursor.fetchall()
                     
@@ -1048,6 +1174,7 @@ def groupings_CS():
 
                     result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
                     student_QA_s_a = cursor.fetchall()
+
 
                     if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -1066,8 +1193,8 @@ def groupings_CS():
 
                             result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA = cursor.fetchone()
+                         
                             
-
                             #Lead programmer
                             if student_LP:
                                 student_LP_id = student_LP['id']
@@ -1103,7 +1230,7 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                                                
                             no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -1122,6 +1249,8 @@ def groupings_CS():
 
                             result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA_s = cursor.fetchone()
+
+                          
                             
                             #Lead programmer
                             if student_LP_s:
@@ -1157,7 +1286,8 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                            
+                           
                             no_of_groups = no_of_groups - 1     
                     else:
                         mes="dasdsadsad"
@@ -1216,8 +1346,9 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
-
-                                                
+                                
+                                
+                                                    
                                 no_of_groups = no_of_groups - 1    
                         else:
                             mes="pass me cok"
@@ -1274,8 +1405,11 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                              
 
                                 if remain_students > 0:
+                                    
                                     result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                     student4_remain = cursor.fetchone()
 
@@ -1284,11 +1418,10 @@ def groupings_CS():
                                         cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
-
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
-                            
+                                no_of_groups = no_of_groups - 1
+
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -1305,11 +1438,14 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -1408,6 +1544,8 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
+                            
+                           
 
                             no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups and result5_s_a >= no_of_groups:
@@ -1474,6 +1612,8 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
+                            
+                          
 
                             no_of_groups = no_of_groups - 1     
                     else:
@@ -1544,6 +1684,9 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                               
+
 
                                                 
                                 no_of_groups = no_of_groups - 1    
@@ -1613,20 +1756,23 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                                
 
                                 if remain_students > 0:
-                                    result5_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
-                                    student5_remain = cursor.fetchone()
+                                    
+                                    result6_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                    student6_remain = cursor.fetchone()
 
-                                    if student5_remain:
-                                        student5_remain_id = student5_remain['id']
-                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student5_remain_id)))        
+                                    if student6_remain:
+                                        student6_remain_id = student6_remain['id']
+                                        cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student6_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
-                            
+                                no_of_groups = no_of_groups - 1
+
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -1643,10 +1789,13 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+
+                    cursor.close()
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSCS3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -2026,11 +2175,12 @@ def groupings_CS():
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
 
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/teacher/groupings_CS.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
         #BSCS 3B
         elif program == 'BSCS' and section == '3B':
+            session['section_no'] = 2
             if result2 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3B) or they might not have predicted their main and secondary roles yet!"
                 return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -2043,6 +2193,7 @@ def groupings_CS():
                 return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -2108,6 +2259,7 @@ def groupings_CS():
                                 mes='unexpected error occured!'
 
                             no_of_groups = no_of_groups - 1
+                            
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
                         while no_of_groups > 0:
                             group_iterator = group_iterator + 1
@@ -2149,10 +2301,11 @@ def groupings_CS():
                             else:
                                 mes='unexpected error occured!'
 
-                            no_of_groups = no_of_groups - 1     
+                            no_of_groups = no_of_groups - 1 
+                               
                     else:
                         mes="dasdsadsad"
-                        remain_students = int(len(students_BSCS3A) % group_size)
+                        remain_students = int(len(students_BSCS3B) % group_size)
                         if remain_students == 0:
                             no_of_groups_inner = no_of_groups
                             while no_of_groups > 0:
@@ -2198,7 +2351,8 @@ def groupings_CS():
                                     mes='unexpected error occured!'
 
                                                 
-                                no_of_groups = no_of_groups - 1    
+                                no_of_groups = no_of_groups - 1  
+                                 
                         else:
                             mes="pass me cok"
                             no_of_groups_inner = no_of_groups
@@ -2257,7 +2411,7 @@ def groupings_CS():
 
                                                 
                                     no_of_groups = no_of_groups - 1
-
+                            
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -2274,11 +2428,13 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -2294,6 +2450,7 @@ def groupings_CS():
                     result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
                     student_QA_a = cursor.fetchall()
 
+
                     result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
                     student_LP_s_a = cursor.fetchall()
                     
@@ -2305,6 +2462,7 @@ def groupings_CS():
 
                     result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
                     student_QA_s_a = cursor.fetchall()
+
 
                     if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -2323,8 +2481,8 @@ def groupings_CS():
 
                             result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA = cursor.fetchone()
+                         
                             
-
                             #Lead programmer
                             if student_LP:
                                 student_LP_id = student_LP['id']
@@ -2360,7 +2518,7 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                                                
                             no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -2379,6 +2537,8 @@ def groupings_CS():
 
                             result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA_s = cursor.fetchone()
+
+                          
                             
                             #Lead programmer
                             if student_LP_s:
@@ -2414,7 +2574,8 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                            
+                           
                             no_of_groups = no_of_groups - 1     
                     else:
                         mes="dasdsadsad"
@@ -2473,8 +2634,9 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
-
-                                                
+                                
+                                
+                                                    
                                 no_of_groups = no_of_groups - 1    
                         else:
                             mes="pass me cok"
@@ -2531,8 +2693,11 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                              
 
                                 if remain_students > 0:
+                                    
                                     result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                     student4_remain = cursor.fetchone()
 
@@ -2541,10 +2706,9 @@ def groupings_CS():
                                         cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
-
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
+                                no_of_groups = no_of_groups - 1
 
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
@@ -2562,11 +2726,14 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -2900,11 +3067,13 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+                    cursor.close()                
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSCS3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -3159,7 +3328,7 @@ def groupings_CS():
                                     mes='unexpected error occured!'
                                 
                                 #additional
-                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                 student5 = cursor.fetchone()
 
                                 if student5:
@@ -3240,7 +3409,7 @@ def groupings_CS():
                                     mes='unexpected error occured!'
                                 
                                 #additional
-                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3B' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                 student5 = cursor.fetchone()
 
                                 if student5:
@@ -3280,10 +3449,12 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+                    cursor.close()
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
         #BSCS 3C
         elif program == 'BSCS' and section == '3C':
+            session['section_no'] = 3
             if result3 == 0:
                 mes_no_studs = "There are no students in this program and section (BSCS-3C) or they might not have predicted their main and secondary roles yet!"
                 return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
@@ -3296,6 +3467,7 @@ def groupings_CS():
                 return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -3528,10 +3700,12 @@ def groupings_CS():
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
 
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -3815,12 +3989,13 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -4154,11 +4329,12 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
+                    return redirect(url_for('groupings_CS_result'))
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSCS3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -4413,7 +4589,7 @@ def groupings_CS():
                                     mes='unexpected error occured!'
                                 
                                 #additional
-                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                 student5 = cursor.fetchone()
 
                                 if student5:
@@ -4494,7 +4670,7 @@ def groupings_CS():
                                     mes='unexpected error occured!'
                                 
                                 #additional
-                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
+                                result5_out = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3C' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                 student5 = cursor.fetchone()
 
                                 if student5:
@@ -4534,14 +4710,97 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_CS.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
-
+                    return redirect(url_for('groupings_CS_result'))
+    cursor.close()
     return render_template('teacher/groupings_CS.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo,students_all = students_all, students_BSCS3A = len(students_BSCS3A), students_BSCS3B = len(students_BSCS3B), students_BSCS3C = len(students_BSCS3C), students_BSCS3D = len(students_BSCS3D), sections_CS=sections_CS)
 
+
+@app.route('/groupings_IT/group_result')
+def groupings_IT_result():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    sections_IT = cursor.execute("SELECT DISTINCT users.section, predict.program FROM users INNER JOIN predict ON users.id = predict.userID WHERE users.program = 'BSIT';")
+    sections_IT = cursor.fetchall()
+
+    result5 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' ORDER BY predict.id DESC")
+    students_BSIT3A = cursor.fetchall()
+
+    result6 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' ORDER BY predict.id DESC")
+    students_BSIT3B = cursor.fetchall()
+
+    result7 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' ORDER BY predict.id DESC")
+    students_BSIT3C = cursor.fetchall()
+
+    result8 = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' ORDER BY predict.id DESC")
+    students_BSIT3D = cursor.fetchall()
+
+    result9 = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' ORDER BY predict.id DESC")
+    students_all = cursor.fetchall()
+
+    result1_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3A_wo = cursor.fetchall()
+
+    result2_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3B' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3B_wo = cursor.fetchall()
+
+    result3_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3C' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3C_wo = cursor.fetchall()
+
+    result4_wo = cursor.execute("SELECT predict.id, users.firstName, users.lastName, users.section, predict.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and users.section = '3D' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_BSIT3D_wo = cursor.fetchall()
+
+    result10 = cursor.execute("SELECT users.AY, users.firstName, users.lastName, users.section, users.program, predict._group, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID WHERE predict.program = '0' and predict._group = 'none' ORDER BY predict.id DESC")
+    students_wo_group = cursor.fetchall()
+
+    if session['g_size'] == 3:
+        mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+    elif session['g_size'] == 4:
+        mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+    elif session['g_size'] == 5:
+        mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+    elif session['g_size'] == 6:
+        mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
+        if session['section_no'] == 1:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 2:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+        elif session['section_no'] == 3:
+            cursor.close()
+            return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+
+
 #groupings module BSIT
-@app.route('/groupings_IT', methods =['GET', 'POST'])
+@app.route('/groupings_IT', methods =['POST', 'GET'])
 def groupings_IT():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     
@@ -4584,6 +4843,7 @@ def groupings_IT():
         section = request.form['section']
 
         if program == 'BSIT' and section == '3A':
+            session['section_no'] = 1
 
             if result5 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3A) or they might not have predicted their main and secondary roles yet!"
@@ -4597,6 +4857,7 @@ def groupings_IT():
                 return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -4828,11 +5089,12 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -4848,6 +5110,7 @@ def groupings_IT():
                     result4_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none'")
                     student_QA_a = cursor.fetchall()
 
+
                     result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
                     student_LP_s_a = cursor.fetchall()
                     
@@ -4859,6 +5122,7 @@ def groupings_IT():
 
                     result4_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none'")
                     student_QA_s_a = cursor.fetchall()
+
 
                     if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups and result4_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -4877,8 +5141,8 @@ def groupings_IT():
 
                             result4 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA = cursor.fetchone()
+                         
                             
-
                             #Lead programmer
                             if student_LP:
                                 student_LP_id = student_LP['id']
@@ -4914,7 +5178,7 @@ def groupings_IT():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                                                
                             no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups and result4_s_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -4933,6 +5197,8 @@ def groupings_IT():
 
                             result4_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '3' and predict._group = 'none' LIMIT 1")
                             student_QA_s = cursor.fetchone()
+
+                          
                             
                             #Lead programmer
                             if student_LP_s:
@@ -4968,7 +5234,8 @@ def groupings_IT():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                            
+                           
                             no_of_groups = no_of_groups - 1     
                     else:
                         mes="dasdsadsad"
@@ -5027,8 +5294,9 @@ def groupings_IT():
                             
                                 else:
                                     mes='unexpected error occured!'
-
-                                                
+                                
+                                
+                                                    
                                 no_of_groups = no_of_groups - 1    
                         else:
                             mes="pass me cok"
@@ -5085,8 +5353,11 @@ def groupings_IT():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                              
 
                                 if remain_students > 0:
+                                    
                                     result4_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                     student4_remain = cursor.fetchone()
 
@@ -5095,11 +5366,10 @@ def groupings_IT():
                                         cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student4_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
-
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
-                            
+                                no_of_groups = no_of_groups - 1
+
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -5117,11 +5387,13 @@ def groupings_IT():
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
 
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -5455,12 +5727,13 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-                    
+                    cursor.close()  
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSIT3A)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -5837,11 +6110,12 @@ def groupings_IT():
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
 
-                    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
         #BSIT 3B
         elif program == 'BSIT' and section == '3B':
+            session['section_no'] = 2
             if result6 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3B) or they might not have predicted their main and secondary roles yet!"
                 return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -5854,6 +6128,7 @@ def groupings_IT():
                 return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -6085,11 +6360,12 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -6373,12 +6649,13 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-                    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -6712,12 +6989,13 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSIT3B)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -7093,10 +7371,12 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+                    cursor.close()    
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result2_wo=result2_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
         #BSIT 3C
         elif program == 'BSIT' and section == '3C':
+            session['section_no'] = 3
             if result7 == 0:
                 mes_no_studs = "There are no students in this program and section (BSIT-3C) or they might not have predicted their main and secondary roles yet!"
                 return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
@@ -7109,6 +7389,7 @@ def groupings_IT():
                 return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, students_wo_group=students_wo_group, mes_no_studs=mes_no_studs, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
             else:
                 if group_size == 3:
+                    session['g_size'] = 3
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -7340,11 +7621,12 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-
+                    cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 #When the selected group size is 4
                 elif group_size == 4:
+                    session['g_size'] = 4
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -7628,12 +7910,13 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-                    
+                    cursor.close()
                     mes_s = "Students were successfully formed with 4 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
 
                 #When the selected group size is 5
                 elif group_size == 5:
+                    session['g_size'] = 5
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -7967,12 +8250,13 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-                    
+                    cursor.close() 
                     mes_s = "Students were successfully formed with 5 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
+                    return redirect(url_for('groupings_IT_result'))
                 
                 #When the selected group size is 6
                 elif group_size == 6:
+                    session['g_size'] = 6
                     no_of_groups = round(int(len(students_BSIT3C)/group_size))
                     group_iterator = 0
                     group_iterator_inner = 0
@@ -8348,16 +8632,18 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+                    cursor.close()
                     mes_s = "Students were successfully formed with 6 members each group. However, some groups will have additional member/s if the class size is not even.!"
-                    return render_template('teacher/groupings_IT.html', result3_wo=result3_wo, mes=mes, mes_s=mes_s, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT=sections_IT)
-    
+                    return redirect(url_for('groupings_IT_result'))
+    cursor.close()
     return render_template('teacher/groupings_IT.html', result1_wo=result1_wo, result2_wo=result2_wo, result3_wo=result3_wo, students_all = students_all, students_BSIT3A = len(students_BSIT3A), students_BSIT3B = len(students_BSIT3B), students_BSIT3C = len(students_BSIT3C), students_BSIT3D = len(students_BSIT3D), sections_IT= sections_IT)
 
 @app.route('/student_records')
 def student_records():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    result = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program, predict.MAIN_ROLE, predict.SECOND_ROLE FROM users INNER JOIN predict ON users.id = predict.userID ORDER BY predict.id DESC")
+    result = cursor.execute("SELECT users.id, users.AY, users.firstName, users.lastName, users.section, users.program FROM users WHERE users.userType = 'student' ORDER BY users.id DESC")
     student = cursor.fetchall()
+    cursor.close()
     return render_template('teacher/student_records.html', student=student)
 
 @app.route('/logout')
@@ -8383,7 +8669,7 @@ def logout():
     session.clear()
     return render_template('index.html')
 
-@app.route('/register', methods =['GET', 'POST'])
+@app.route('/register', methods =['POST', 'GET'])
 def register():
     mesage = ''
     if request.method == 'POST'  and 'userType' in request.form and 'firstName' in request.form  and 'lastName' in request.form  and 'password' in request.form and 'email' in request.form and 'program' in request.form  and 'section' in request.form :
@@ -8423,11 +8709,13 @@ def register():
                 mysql.connection.commit()
                 mesage = 'You have successfully registered!'
 
+        cursor.close()
     elif request.method == 'POST':
         mesage = 'Please fill out the form !'
+
     return render_template('register.html', mesage = mesage)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(threaded=True)
 

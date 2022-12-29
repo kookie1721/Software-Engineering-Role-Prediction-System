@@ -194,7 +194,7 @@
                     
                     <br>
 
-                    <select id="s_groupSize" name="s_groupSize" class="form-select" aria-label="Default select example" onchange="check();" required>
+                    <select id="s_groupSize" name="s_groupSize" class="form-select" aria-label="Default select example" required>
                         <option selected value="">Select Group Size (Minimum-3 and Maximum-6):</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
@@ -412,13 +412,6 @@
           
         }).change();
     </script>
-
-    <script>
-        document.getElementById('gSize').addEventListener('keyup', function(){
-            this.value = (parseInt(this.value) < 3 || parseInt(this.value) > 5 || isNaN(this.value)) ? "" : (this.value)
-        });
-    </script>
-    
 
     <script>
         $(document).ready(function() {

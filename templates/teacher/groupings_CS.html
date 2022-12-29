@@ -161,7 +161,7 @@
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Generate Group/s</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="/groupings_CS" method="POST">
+                <form action="{{ url_for('groupings_CS') }}" method="POST">
                 <div class="modal-body">
                     <h5 id="cl_bscs3a" style="display:none; text-align: center;">Class Size (BSCS3A): {{students_BSCS3A}}</h5>
 
@@ -191,7 +191,7 @@
                     
                     <br>
 
-                    <select id="s_groupSize" name="s_groupSize" class="form-select" aria-label="Default select example" onchange="check();" required>
+                    <select id="s_groupSize" name="s_groupSize" class="form-select" aria-label="Default select example" required>
                         <option selected value="">Select Group Size (Minimum-3 and Maximum-6):</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
@@ -413,13 +413,7 @@
           
         }).change();
     </script>
-
-    <script>
-        document.getElementById('gSize').addEventListener('keyup', function(){
-            this.value = (parseInt(this.value) < 3 || parseInt(this.value) > 5 || isNaN(this.value)) ? "" : (this.value)
-        });
-    </script>
-    
+ 
 
     <script>
         $(document).ready(function() {

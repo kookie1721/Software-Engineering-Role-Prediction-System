@@ -53,7 +53,7 @@
                 <label for="nav-toggle">
                     <span class="las la-bars"></span>
                 </label>
-                Student Records (All Programs)
+                Student Records (registered students)
             </h2>
             <button style="border: none;background-color: #fff;" type="button"  data-bs-toggle="modal" data-bs-target="#logoutModal">
                 <span class="las la-sign-out-alt"></span> <span>Logout</span>
@@ -70,10 +70,8 @@
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Section</th>
-                                <th>Program</th>
-                                <th>Main Role</th>
-                                <th>Secondary Role</th>
-                          
+                                <th>Program</th>          
+                      
                                 <th></th>
                             </tr>
                         </thead>
@@ -86,41 +84,7 @@
                                 <td> {{row.section}} </td>
                                 <td> {{row.program}} </td>
 
-                                {% if row.MAIN_ROLE == 0%}
-                                    <td>Lead Programmer</td>
-                                {% endif %}
-                                {% if row.MAIN_ROLE == 1%}
-                                    <td>Project Manager</td>
-                                {% endif %}
-                                {% if row.MAIN_ROLE == 2%}
-                                    <td>UI/UX Designer</td>
-                                {% endif %}
-                                {% if row.MAIN_ROLE == 3%}
-                                    <td>QA Engineer</td>
-                                {% endif %}
-                                {% if row.MAIN_ROLE == 4%}
-                                    <td>Business Analyst</td>
-                                {% endif %}
-
-                                {% if row.SECOND_ROLE == 0%}
-                                <td>Lead Programmer</td>
-                                {% endif %}
-                                {% if row.SECOND_ROLE == 1%}
-                                    <td>Project Manager</td>
-                                {% endif %}
-                                {% if row.SECOND_ROLE == 2%}
-                                    <td>UI/UX Designer</td>
-                                {% endif %}
-                                {% if row.SECOND_ROLE == 3%}
-                                    <td>QA Engineer</td>
-                                {% endif %}
-                                {% if row.SECOND_ROLE == 4%}
-                                    <td>Business Analyst</td>
-                                {% endif %}
-                                {% if row.SECOND_ROLE == 5%}
-                                    <td>None</td>
-                                {% endif %}
-
+            
 
                                 <td>
                                     <form action="{{ url_for ('view_student') }}" method="POST">
