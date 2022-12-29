@@ -918,6 +918,9 @@ def groupings_CS():
                     result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
                     student_UI_UX_a = cursor.fetchall()
 
+                
+
+
                     result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
                     student_LP_s_a = cursor.fetchall()
                     
@@ -926,6 +929,9 @@ def groupings_CS():
                     
                     result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
                     student_UI_UX_s_a = cursor.fetchall()
+
+                
+
 
                     if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -941,8 +947,9 @@ def groupings_CS():
 
                             result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
                             student_UI_UX = cursor.fetchone()
-                            
 
+                         
+                            
                             #Lead programmer
                             if student_LP:
                                 student_LP_id = student_LP['id']
@@ -969,9 +976,10 @@ def groupings_CS():
                             
                             else:
                                 mes='unexpected error occured!'
-
-                            no_of_groups = no_of_groups - 1
                             
+                           
+                                                
+                            no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
                         while no_of_groups > 0:
                             group_iterator = group_iterator + 1
@@ -986,6 +994,8 @@ def groupings_CS():
                             
                             result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
                             student_UI_UX_s = cursor.fetchone()
+
+                                         
                             
                             #Lead programmer
                             if student_LP_s:
@@ -1012,9 +1022,11 @@ def groupings_CS():
                                 mysql.connection.commit()
                             else:
                                 mes='unexpected error occured!'
-
-                            no_of_groups = no_of_groups - 1 
-                               
+                            
+                           
+                            
+                           
+                            no_of_groups = no_of_groups - 1     
                     else:
                         mes="dasdsadsad"
                         remain_students = int(len(students_BSCS3A) % group_size)
@@ -1061,10 +1073,11 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
-
-                                                
-                                no_of_groups = no_of_groups - 1  
-                                 
+                                
+                                
+                                
+                                                    
+                                no_of_groups = no_of_groups - 1    
                         else:
                             mes="pass me cok"
                             no_of_groups_inner = no_of_groups
@@ -1109,8 +1122,11 @@ def groupings_CS():
                             
                                 else:
                                     mes='unexpected error occured!'
-
+                                
+                                
+                              
                                 if remain_students > 0:
+                                    
                                     result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '1' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                     student3_remain = cursor.fetchone()
 
@@ -1119,11 +1135,10 @@ def groupings_CS():
                                         cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
-
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
-                            
+                                no_of_groups = no_of_groups - 1
+
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -1140,7 +1155,7 @@ def groupings_CS():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
-                    
+
                     cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return redirect(url_for('groupings_CS_result'))
@@ -4870,6 +4885,8 @@ def groupings_IT():
                     result3_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none'")
                     student_UI_UX_a = cursor.fetchall()
 
+
+
                     result1_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '0' and predict._group = 'none'")
                     student_LP_s_a = cursor.fetchall()
                     
@@ -4878,6 +4895,8 @@ def groupings_IT():
                     
                     result3_s_a = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none'")
                     student_UI_UX_s_a = cursor.fetchall()
+
+                  
 
                     if result1_a >= no_of_groups and result2_a >= no_of_groups and result3_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -4893,8 +4912,10 @@ def groupings_IT():
 
                             result3 = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.MAIN_ROLE = '2' and predict._group = 'none' LIMIT 1")
                             student_UI_UX = cursor.fetchone()
-                            
 
+                         
+                         
+                            
                             #Lead programmer
                             if student_LP:
                                 student_LP_id = student_LP['id']
@@ -4921,7 +4942,9 @@ def groupings_IT():
                             
                             else:
                                 mes='unexpected error occured!'
-
+                            
+                           
+                                                
                             no_of_groups = no_of_groups - 1
                     elif result1_s_a >= no_of_groups and result2_s_a >= no_of_groups and result3_s_a >= no_of_groups:
                         while no_of_groups > 0:
@@ -4937,6 +4960,8 @@ def groupings_IT():
                             
                             result3_s = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict.SECOND_ROLE = '2' and predict._group = 'none' LIMIT 1")
                             student_UI_UX_s = cursor.fetchone()
+
+                          
                             
                             #Lead programmer
                             if student_LP_s:
@@ -4963,7 +4988,10 @@ def groupings_IT():
                                 mysql.connection.commit()
                             else:
                                 mes='unexpected error occured!'
-
+                            
+                            
+                            
+                           
                             no_of_groups = no_of_groups - 1     
                     else:
                         mes="dasdsadsad"
@@ -5011,8 +5039,11 @@ def groupings_IT():
                             
                                 else:
                                     mes='unexpected error occured!'
-
-                                                
+                                
+                               
+                                
+                                
+                                                    
                                 no_of_groups = no_of_groups - 1    
                         else:
                             mes="pass me cok"
@@ -5058,8 +5089,12 @@ def groupings_IT():
                             
                                 else:
                                     mes='unexpected error occured!'
+                                
+                                
+                              
 
                                 if remain_students > 0:
+                                    
                                     result3_out_remain = cursor.execute("SELECT users.firstName, users.lastName, users.section, predict.id, predict.programming_avg FROM predict INNER JOIN users on users.id = predict.userID WHERE predict.program = '0' and users.section = '3A' and predict._group = 'none' ORDER BY predict.programming_avg ASC LIMIT 1")
                                     student3_remain = cursor.fetchone()
 
@@ -5068,11 +5103,10 @@ def groupings_IT():
                                         cursor.execute('UPDATE predict SET _group = % s WHERE id = % s', (int(group_iterator), int(student3_remain_id)))        
                                         mysql.connection.commit()
 
-                                    remain_students = remain_students - 1
-
+                                remain_students = remain_students - 1
                                                 
-                                    no_of_groups = no_of_groups - 1
-                            
+                                no_of_groups = no_of_groups - 1
+
                             if no_of_groups == 0 and remain_students > 0:
                                 while remain_students > 0:
 
@@ -5089,6 +5123,7 @@ def groupings_IT():
 
                                     group_iterator = group_iterator - 1
                                     remain_students = remain_students - 1
+
                     cursor.close()
                     mes_s = "Students were successfully formed with 3 members each group. However, some groups will have additional member/s if the class size is not even.!"
                     return redirect(url_for('groupings_IT_result'))
@@ -8666,6 +8701,9 @@ def logout():
     session.pop('no_predicted_studs_result_10_CS', None)
     session.pop('no_predicted_studs_data_10_CS', None)
     session.pop('repredict', None)
+    session.pop('section_no', None)
+    session.pop('g_size', None)
+    
     session.clear()
     return render_template('index.html')
 

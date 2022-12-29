@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+  <div id="preloader">
+	</div>
      <!-- Body of Form starts -->
   	<div class="container">
 
@@ -111,7 +113,6 @@
                   <option value="3A">3A</option>
                   <option value="3B">3B</option>
                   <option value="3C">3C</option>
-                  <option value="3D">3D</option>
                 </select>
               </div>
               <div class="clr"></div>
@@ -159,6 +160,13 @@
         }
   
       }).change();
+    </script>
+
+    <script>
+      var loader =  document.getElementById("preloader");
+      window.addEventListener("load", function(){
+        loader.style.display = "none";
+      })
     </script>
 </body>
 </html>
