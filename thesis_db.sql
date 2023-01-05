@@ -1,1770 +1,260 @@
-<!doctype html>
-<html lang="en" dir="ltr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="referrer" content="no-referrer">
-  <meta name="robots" content="noindex,nofollow">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <style id="cfs-style">html{display: none;}</style>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-      <link rel="stylesheet" type="text/css" href="./themes/pmahomme/jquery/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="js/vendor/codemirror/lib/codemirror.css?v=5.1.3">
-    <link rel="stylesheet" type="text/css" href="js/vendor/codemirror/addon/hint/show-hint.css?v=5.1.3">
-    <link rel="stylesheet" type="text/css" href="js/vendor/codemirror/addon/lint/lint.css?v=5.1.3">
-    <link rel="stylesheet" type="text/css" href="./themes/pmahomme/css/theme.css?v=5.1.3&nocache=369071684ltr&server=1">
-    <link rel="stylesheet" type="text/css" href="./themes/pmahomme/css/printview.css?v=5.1.3" media="print" id="printcss">
-    <title>localhost / 127.0.0.1 | phpMyAdmin 5.1.3</title>
-    <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery.min.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery-migrate.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/sprintf.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/ajax.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/keyhandler.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/bootstrap/bootstrap.bundle.min.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery-ui.min.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/js.cookie.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery.mousewheel.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery.validate.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery-ui-timepicker-addon.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery.ba-hashchange-2.0.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/jquery/jquery.debounce-1.0.6.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/menu_resizer.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/cross_framing_protection.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/rte.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/messages.php?l=en&v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/config.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/doclinks.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/functions.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/navigation.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/indexes.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/common.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/page_settings.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/export_output.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/lib/codemirror.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/mode/sql/sql.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/addon/runmode/runmode.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/addon/hint/show-hint.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/addon/hint/sql-hint.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/codemirror/addon/lint/lint.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/codemirror/addon/lint/sql-lint.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/vendor/tracekit.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/error_report.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/drag_drop_import.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/shortcuts_handler.js?v=5.1.3"></script>
-  <script data-cfasync="false" type="text/javascript" src="js/dist/console.js?v=5.1.3"></script>
+-- phpMyAdmin SQL Dump
+-- version 5.3.0-dev+20230104.cdc2f37a1d
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jan 05, 2023 at 10:04 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.5
 
-<script data-cfasync="false" type="text/javascript">
-// <![CDATA[
-CommonParams.setAll({common_query:"",opendb_url:"index.php?route=/database/structure",lang:"en",server:"1",table:"",db:"",token:"393d3445687d7a253f6a395969224f64",text_dir:"ltr",show_databases_navigation_as_tree:true,pma_text_default_tab:"Browse",pma_text_left_default_tab:"Structure",pma_text_left_default_tab2:false,LimitChars:"50",pftext:"P",confirm:true,LoginCookieValidity:"1440",session_gc_maxlifetime:"1440",logged_in:true,is_https:false,rootPath:"/phpmyadmin/",arg_separator:"&",PMA_VERSION:"5.1.3",auth_type:"config",user:"root"});
-var firstDayOfCalendar = '0';
-var themeImagePath = '.\/themes\/pmahomme\/img\/';
-var mysqlDocTemplate = '.\/url.php\u003Furl\u003Dhttps\u00253A\u00252F\u00252Fdev.mysql.com\u00252Fdoc\u00252Frefman\u00252F8.0\u00252Fen\u00252F\u002525s.html';
-var maxInputVars = 1000;
-
-if ($.datepicker) {
-  $.datepicker.regional[''].closeText = 'Done';
-  $.datepicker.regional[''].prevText = 'Prev';
-  $.datepicker.regional[''].nextText = 'Next';
-  $.datepicker.regional[''].currentText = 'Today';
-  $.datepicker.regional[''].monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  $.datepicker.regional[''].monthNamesShort = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  $.datepicker.regional[''].dayNames = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  $.datepicker.regional[''].dayNamesShort = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-  ];
-  $.datepicker.regional[''].dayNamesMin = [
-    'Su',
-    'Mo',
-    'Tu',
-    'We',
-    'Th',
-    'Fr',
-    'Sa',
-  ];
-  $.datepicker.regional[''].weekHeader = 'Wk';
-  $.datepicker.regional[''].showMonthAfterYear = false;
-  $.datepicker.regional[''].yearSuffix = '';
-  $.extend($.datepicker._defaults, $.datepicker.regional['']);
-}
-
-if ($.timepicker) {
-  $.timepicker.regional[''].timeText = 'Time';
-  $.timepicker.regional[''].hourText = 'Hour';
-  $.timepicker.regional[''].minuteText = 'Minute';
-  $.timepicker.regional[''].secondText = 'Second';
-  $.extend($.timepicker._defaults, $.timepicker.regional['']);
-}
-
-function extendingValidatorMessages () {
-  $.extend($.validator.messages, {
-    required: 'This\u0020field\u0020is\u0020required',
-    remote: 'Please\u0020fix\u0020this\u0020field',
-    email: 'Please\u0020enter\u0020a\u0020valid\u0020email\u0020address',
-    url: 'Please\u0020enter\u0020a\u0020valid\u0020URL',
-    date: 'Please\u0020enter\u0020a\u0020valid\u0020date',
-    dateISO: 'Please\u0020enter\u0020a\u0020valid\u0020date\u0020\u0028\u0020ISO\u0020\u0029',
-    number: 'Please\u0020enter\u0020a\u0020valid\u0020number',
-    creditcard: 'Please\u0020enter\u0020a\u0020valid\u0020credit\u0020card\u0020number',
-    digits: 'Please\u0020enter\u0020only\u0020digits',
-    equalTo: 'Please\u0020enter\u0020the\u0020same\u0020value\u0020again',
-    maxlength: $.validator.format('Please\u0020enter\u0020no\u0020more\u0020than\u0020\u007B0\u007D\u0020characters'),
-    minlength: $.validator.format('Please\u0020enter\u0020at\u0020least\u0020\u007B0\u007D\u0020characters'),
-    rangelength: $.validator.format('Please\u0020enter\u0020a\u0020value\u0020between\u0020\u007B0\u007D\u0020and\u0020\u007B1\u007D\u0020characters\u0020long'),
-    range: $.validator.format('Please\u0020enter\u0020a\u0020value\u0020between\u0020\u007B0\u007D\u0020and\u0020\u007B1\u007D'),
-    max: $.validator.format('Please\u0020enter\u0020a\u0020value\u0020less\u0020than\u0020or\u0020equal\u0020to\u0020\u007B0\u007D'),
-    min: $.validator.format('Please\u0020enter\u0020a\u0020value\u0020greater\u0020than\u0020or\u0020equal\u0020to\u0020\u007B0\u007D'),
-    validationFunctionForDateTime: $.validator.format('Please\u0020enter\u0020a\u0020valid\u0020date\u0020or\u0020time'),
-    validationFunctionForHex: $.validator.format('Please\u0020enter\u0020a\u0020valid\u0020HEX\u0020input'),
-    validationFunctionForMd5: $.validator.format('This\u0020column\u0020can\u0020not\u0020contain\u0020a\u002032\u0020chars\u0020value'),
-    validationFunctionForAesDesEncrypt: $.validator.format('These\u0020functions\u0020are\u0020meant\u0020to\u0020return\u0020a\u0020binary\u0020result\u003B\u0020to\u0020avoid\u0020inconsistent\u0020results\u0020you\u0020should\u0020store\u0020it\u0020in\u0020a\u0020BINARY,\u0020VARBINARY,\u0020or\u0020BLOB\u0020column.')
-  });
-}
-
-ConsoleEnterExecutes=false
-
-AJAX.scriptHandler
-  .add('vendor/jquery/jquery.min.js', 0)
-  .add('vendor/jquery/jquery-migrate.js', 0)
-  .add('vendor/sprintf.js', 1)
-  .add('ajax.js', 0)
-  .add('keyhandler.js', 1)
-  .add('vendor/bootstrap/bootstrap.bundle.min.js', 1)
-  .add('vendor/jquery/jquery-ui.min.js', 0)
-  .add('vendor/js.cookie.js', 1)
-  .add('vendor/jquery/jquery.mousewheel.js', 0)
-  .add('vendor/jquery/jquery.validate.js', 0)
-  .add('vendor/jquery/jquery-ui-timepicker-addon.js', 0)
-  .add('vendor/jquery/jquery.ba-hashchange-2.0.js', 0)
-  .add('vendor/jquery/jquery.debounce-1.0.6.js', 0)
-  .add('menu_resizer.js', 1)
-  .add('cross_framing_protection.js', 0)
-  .add('rte.js', 1)
-  .add('messages.php', 0)
-  .add('config.js', 1)
-  .add('doclinks.js', 1)
-  .add('functions.js', 1)
-  .add('navigation.js', 1)
-  .add('indexes.js', 1)
-  .add('common.js', 1)
-  .add('page_settings.js', 1)
-  .add('export_output.js', 1)
-  .add('vendor/codemirror/lib/codemirror.js', 0)
-  .add('vendor/codemirror/mode/sql/sql.js', 0)
-  .add('vendor/codemirror/addon/runmode/runmode.js', 0)
-  .add('vendor/codemirror/addon/hint/show-hint.js', 0)
-  .add('vendor/codemirror/addon/hint/sql-hint.js', 0)
-  .add('vendor/codemirror/addon/lint/lint.js', 0)
-  .add('codemirror/addon/lint/sql-lint.js', 0)
-  .add('vendor/tracekit.js', 1)
-  .add('error_report.js', 1)
-  .add('drag_drop_import.js', 1)
-  .add('shortcuts_handler.js', 1)
-  .add('console.js', 1)
-;
-$(function() {
-        AJAX.fireOnload('vendor/sprintf.js');
-        AJAX.fireOnload('keyhandler.js');
-      AJAX.fireOnload('vendor/bootstrap/bootstrap.bundle.min.js');
-        AJAX.fireOnload('vendor/js.cookie.js');
-                AJAX.fireOnload('menu_resizer.js');
-        AJAX.fireOnload('rte.js');
-        AJAX.fireOnload('config.js');
-      AJAX.fireOnload('doclinks.js');
-      AJAX.fireOnload('functions.js');
-      AJAX.fireOnload('navigation.js');
-      AJAX.fireOnload('indexes.js');
-      AJAX.fireOnload('common.js');
-      AJAX.fireOnload('page_settings.js');
-      AJAX.fireOnload('export_output.js');
-                    AJAX.fireOnload('vendor/tracekit.js');
-      AJAX.fireOnload('error_report.js');
-      AJAX.fireOnload('drag_drop_import.js');
-      AJAX.fireOnload('shortcuts_handler.js');
-      AJAX.fireOnload('console.js');
-  });
-// ]]>
-</script>
-
-  <noscript><style>html{display:block}</style></noscript>
-</head>
-<body>
-    <div id="pma_navigation" data-config-navigation-width="240">
-    <div id="pma_navigation_resizer"></div>
-    <div id="pma_navigation_collapser"></div>
-    <div id="pma_navigation_content">
-      <div id="pma_navigation_header">
-
-                  <div id="pmalogo">
-                          <a href="index.php">
-                                      <img id="imgpmalogo" src="./themes/pmahomme/img/logo_left.png" alt="phpMyAdmin">
-                                      </a>
-                      </div>
-        
-        <div id="navipanellinks">
-          <a href="index.php?route=/" title="Home"><img src="themes/dot.gif" title="Home" alt="Home" class="icon ic_b_home"></a>
-
-                      <a class="logout disableAjax" href="index.php?route=/logout" title="Empty session data"><img src="themes/dot.gif" title="Empty session data" alt="Empty session data" class="icon ic_s_loggoff"></a>
-          
-          <a href="./doc/html/index.html" title="phpMyAdmin documentation" target="_blank" rel="noopener noreferrer"><img src="themes/dot.gif" title="phpMyAdmin documentation" alt="phpMyAdmin documentation" class="icon ic_b_docs"></a>
-
-          <a href="./url.php?url=https%3A%2F%2Fmariadb.com%2Fkb%2Fen%2Fdocumentation%2F" title="MariaDB Documentation" target="_blank" rel="noopener noreferrer"><img src="themes/dot.gif" title="MariaDB Documentation" alt="MariaDB Documentation" class="icon ic_b_sqlhelp"></a>
-
-          <a id="pma_navigation_settings_icon" href="#" title="Navigation panel settings"><img src="themes/dot.gif" title="Navigation panel settings" alt="Navigation panel settings" class="icon ic_s_cog"></a>
-
-          <a id="pma_navigation_reload" href="#" title="Reload navigation panel"><img src="themes/dot.gif" title="Reload navigation panel" alt="Reload navigation panel" class="icon ic_s_reload"></a>
-        </div>
-
-        
-        <img src="themes/dot.gif" title="Loading…" alt="Loading…" style="visibility: hidden; display:none" class="icon ic_ajax_clock_small throbber">
-      </div>
-      <div id="pma_navigation_tree" class="list_container synced highlight autoexpand">
-
-  <div class="pma_quick_warp"><div class="drop_list"><button title="Recent tables" class="drop_button btn">Recent</button><ul id="pma_recent_list"><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=thesis_db&table=users">`thesis_db`.`users`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=thesis_db&table=predict">`thesis_db`.`predict`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=dts_db&table=users">`dts_db`.`users`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=dts_db&table=logs">`dts_db`.`logs`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=dts_db&table=documents">`dts_db`.`documents`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=dts_db&table=office">`dts_db`.`office`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=dts_db&table=pwdreset">`dts_db`.`pwdreset`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=studentinfosystem&table=students">`studentinfosystem`.`students`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=djangodb&table=prdocut_tb">`djangodb`.`prdocut_tb`</a></li><li class="warp_link"><a href="index.php?route=/table/recent-favorite&db=djangodb&table=auth_user">`djangodb`.`auth_user`</a></li></ul></div><div class="drop_list"><button title="Favorite tables" class="drop_button btn">Favorites</button><ul id="pma_favorite_list"><li class="warp_link">There are no favorite tables.</li></ul></div><div class="clearfloat"></div></div>
-
-<div class="clearfloat"></div>
-
-<ul>
-  
-  <!-- CONTROLS START --><li id="navigation_controls_outer"><div id="navigation_controls"><a href="#" id="pma_navigation_collapse" title="Collapse all"><img src="themes/dot.gif" title="Collapse all" alt="Collapse all" class="icon ic_s_collapseall"></a><a href="#" id="pma_navigation_sync" title="Unlink from main panel"><img src="themes/dot.gif" title="Unlink from main panel" alt="Unlink from main panel" class="icon ic_s_link"></a></div></li><!-- CONTROLS ENDS -->
-</ul>
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-<div id='pma_navigation_tree_content'>
-  <ul>
-    <li class="first new_database italics"><div class='block'><i class='first'></i></div><div class="block second"><a href='index.php?route=/server/databases&server=1'><img src="themes/dot.gif" title="" alt="" class="icon ic_b_newdb"></a></div><a class='hover_show_full' href='index.php?route=/server/databases&server=1' title='New'>New</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.ZGphbmdvZGI=" data-vpath="cm9vdA==.ZGphbmdvZGI=" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=djangodb&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=djangodb' title='Structure'>djangodb</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.ZHRzX2Ri" data-vpath="cm9vdA==.ZHRzX2Ri" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=dts_db&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=dts_db' title='Structure'>dts_db</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.aW5mb3JtYXRpb25fc2NoZW1h" data-vpath="cm9vdA==.aW5mb3JtYXRpb25fc2NoZW1h" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=information_schema&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=information_schema' title='Structure'>information_schema</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.bXlzcWw=" data-vpath="cm9vdA==.bXlzcWw=" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=mysql&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=mysql' title='Structure'>mysql</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.cGVyZm9ybWFuY2Vfc2NoZW1h" data-vpath="cm9vdA==.cGVyZm9ybWFuY2Vfc2NoZW1h" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=performance_schema&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=performance_schema' title='Structure'>performance_schema</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.cGhwbXlhZG1pbg==" data-vpath="cm9vdA==.cGhwbXlhZG1pbg==" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=phpmyadmin&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=phpmyadmin' title='Structure'>phpmyadmin</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.c3R1ZGVudGluZm9zeXN0ZW0=" data-vpath="cm9vdA==.c3R1ZGVudGluZm9zeXN0ZW0=" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=studentinfosystem&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=studentinfosystem' title='Structure'>studentinfosystem</a><div class="clearfloat"></div></li><li class="database"><div class='block'><i></i><b></b><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.dGVzdA==" data-vpath="cm9vdA==.dGVzdA==" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=test&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=test' title='Structure'>test</a><div class="clearfloat"></div></li><li class="last database"><div class='block'><i></i><a class="expander" href='#'><span class="hide paths_nav" data-apath="cm9vdA==.dGhlc2lzX2Ri" data-vpath="cm9vdA==.dGhlc2lzX2Ri" data-pos="0"></span><img src="themes/dot.gif" title="Expand/Collapse" alt="Expand/Collapse" class="icon ic_b_plus"></a></div><div class="block second"><a href='index.php?route=/database/operations&amp;server=1&amp;db=thesis_db&amp;'><img src="themes/dot.gif" title="Database operations" alt="Database operations" class="icon ic_s_db"></a></div><a class='hover_show_full' href='index.php?route=/database/structure&server=1&amp;db=thesis_db' title='Structure'>thesis_db</a><div class="clearfloat"></div></li>
-  </ul>
-</div>
+--
+-- Database: `thesis_db`
+--
 
+-- --------------------------------------------------------
 
-      </div>
+--
+-- Table structure for table `predict`
+--
 
-      <div id="pma_navi_settings_container">
-                  <div id="pma_navigation_settings"><div class="page_settings"><form method="post" action="index.php&#x3F;route&#x3D;&#x25;2Fexport&amp;server&#x3D;1" class="config-form disableAjax">
-  <input type="hidden" name="tab_hash" value="">
-      <input type="hidden" name="check_page_refresh" id="check_page_refresh" value="">
-    <input type="hidden" name="token" value="393d3445687d7a253f6a395969224f64">
-  <input type="hidden" name="submit_save" value="Navi">
-<ul class="tabs responsivetable row">
-      <li><a href="#Navi_panel">Navigation panel</a></li>
-      <li><a href="#Navi_tree">Navigation tree</a></li>
-      <li><a href="#Navi_servers">Servers</a></li>
-      <li><a href="#Navi_databases">Databases</a></li>
-      <li><a href="#Navi_tables">Tables</a></li>
-  </ul>
-<div class="tabs_contents col">
-<fieldset class="optbox" id="Navi_panel">
-<legend>Navigation panel</legend>
-    <p>Customize appearance of the navigation panel.</p>
-<table class="pma-table" width="100%" cellspacing="0">
-<tr><th><label for="ShowDatabasesNavigationAsTree">Show databases navigation as tree</label><span class="doc"><a href="./doc/html/config.html#cfg_ShowDatabasesNavigationAsTree" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>In the navigation panel, replaces the database tree with a selector</small></th><td><span class="checkbox"><input type="checkbox" name="ShowDatabasesNavigationAsTree" id="ShowDatabasesNavigationAsTree" checked="checked"></span><a class="restore-default hide" href="#ShowDatabasesNavigationAsTree" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationLinkWithMainPanel">Link with main panel</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationLinkWithMainPanel" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Link with main panel by highlighting the current database or table.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationLinkWithMainPanel" id="NavigationLinkWithMainPanel" checked="checked"></span><a class="restore-default hide" href="#NavigationLinkWithMainPanel" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationDisplayLogo">Display logo</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationDisplayLogo" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Show logo in navigation panel.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationDisplayLogo" id="NavigationDisplayLogo" checked="checked"></span><a class="restore-default hide" href="#NavigationDisplayLogo" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationLogoLink">Logo link URL</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationLogoLink" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>URL where logo in the navigation panel will point to.</small></th><td><input type="text" class="w-75" name="NavigationLogoLink" id="NavigationLogoLink" value="index.php"><a class="restore-default hide" href="#NavigationLogoLink" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationLogoLinkWindow">Logo link target</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationLogoLinkWindow" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Open the linked page in the main window (<code>main</code>) or in a new one (<code>new</code>).</small></th><td><select class="w-75" name="NavigationLogoLinkWindow" id="NavigationLogoLinkWindow"><option value="main" selected="selected">main</option><option value="new">new</option></select><a class="restore-default hide" href="#NavigationLogoLinkWindow" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreePointerEnable">Enable highlighting</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreePointerEnable" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Highlight server under the mouse cursor.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreePointerEnable" id="NavigationTreePointerEnable" checked="checked"></span><a class="restore-default hide" href="#NavigationTreePointerEnable" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="FirstLevelNavigationItems">Maximum items on first level</label><span class="doc"><a href="./doc/html/config.html#cfg_FirstLevelNavigationItems" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>The number of items that can be displayed on each page on the first level of the navigation tree.</small></th><td><input type="number" name="FirstLevelNavigationItems" id="FirstLevelNavigationItems" value="100"><a class="restore-default hide" href="#FirstLevelNavigationItems" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeDisplayItemFilterMinimum">Minimum number of items to display the filter box</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeDisplayItemFilterMinimum" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Defines the minimum number of items (tables, views, routines and events) to display a filter box.</small></th><td><input type="number" name="NavigationTreeDisplayItemFilterMinimum" id="NavigationTreeDisplayItemFilterMinimum" value="30"><a class="restore-default hide" href="#NavigationTreeDisplayItemFilterMinimum" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NumRecentTables">Recently used tables</label><span class="doc"><a href="./doc/html/config.html#cfg_NumRecentTables" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Maximum number of recently used tables; set 0 to disable.</small></th><td><input type="number" name="NumRecentTables" id="NumRecentTables" value="10"><a class="restore-default hide" href="#NumRecentTables" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NumFavoriteTables">Favorite tables</label><span class="doc"><a href="./doc/html/config.html#cfg_NumFavoriteTables" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Maximum number of favorite tables; set 0 to disable.</small></th><td><input type="number" name="NumFavoriteTables" id="NumFavoriteTables" value="10"><a class="restore-default hide" href="#NumFavoriteTables" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationWidth">Navigation panel width</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationWidth" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Set to 0 to collapse navigation panel.</small></th><td><input type="number" name="NavigationWidth" id="NavigationWidth" value="240"><a class="restore-default hide" href="#NavigationWidth" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr></table>
-</fieldset>
-<fieldset class="optbox" id="Navi_tree">
-<legend>Navigation tree</legend>
-    <p>Customize the navigation tree.</p>
-<table class="pma-table" width="100%" cellspacing="0">
-<tr><th><label for="MaxNavigationItems">Maximum items in branch</label><span class="doc"><a href="./doc/html/config.html#cfg_MaxNavigationItems" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>The number of items that can be displayed on each page of the navigation tree.</small></th><td><input type="number" name="MaxNavigationItems" id="MaxNavigationItems" value="50"><a class="restore-default hide" href="#MaxNavigationItems" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeEnableGrouping">Group items in the tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeEnableGrouping" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Group items in the navigation tree (determined by the separator defined in the Databases and Tables tabs above).</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeEnableGrouping" id="NavigationTreeEnableGrouping" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeEnableGrouping" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeEnableExpansion">Enable navigation tree expansion</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeEnableExpansion" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to offer the possibility of tree expansion in the navigation panel.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeEnableExpansion" id="NavigationTreeEnableExpansion" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeEnableExpansion" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeShowTables">Show tables in tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeShowTables" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to show tables under database in the navigation tree</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeShowTables" id="NavigationTreeShowTables" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeShowTables" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeShowViews">Show views in tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeShowViews" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to show views under database in the navigation tree</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeShowViews" id="NavigationTreeShowViews" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeShowViews" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeShowFunctions">Show functions in tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeShowFunctions" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to show functions under database in the navigation tree</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeShowFunctions" id="NavigationTreeShowFunctions" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeShowFunctions" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeShowProcedures">Show procedures in tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeShowProcedures" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to show procedures under database in the navigation tree</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeShowProcedures" id="NavigationTreeShowProcedures" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeShowProcedures" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeShowEvents">Show events in tree</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeShowEvents" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to show events under database in the navigation tree</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeShowEvents" id="NavigationTreeShowEvents" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeShowEvents" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeAutoexpandSingleDb">Expand single database</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeAutoexpandSingleDb" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Whether to expand single database in the navigation tree automatically.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationTreeAutoexpandSingleDb" id="NavigationTreeAutoexpandSingleDb" checked="checked"></span><a class="restore-default hide" href="#NavigationTreeAutoexpandSingleDb" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr></table>
-</fieldset>
-<fieldset class="optbox" id="Navi_servers">
-<legend>Servers</legend>
-    <p>Servers display options.</p>
-<table class="pma-table" width="100%" cellspacing="0">
-<tr><th><label for="NavigationDisplayServers">Display servers selection</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationDisplayServers" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Display server choice at the top of the navigation panel.</small></th><td><span class="checkbox"><input type="checkbox" name="NavigationDisplayServers" id="NavigationDisplayServers" checked="checked"></span><a class="restore-default hide" href="#NavigationDisplayServers" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="DisplayServersList">Display servers as a list</label><span class="doc"><a href="./doc/html/config.html#cfg_DisplayServersList" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>Show server listing as a list instead of a drop down.</small></th><td><span class="checkbox"><input type="checkbox" name="DisplayServersList" id="DisplayServersList"></span><a class="restore-default hide" href="#DisplayServersList" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr></table>
-</fieldset>
-<fieldset class="optbox" id="Navi_databases">
-<legend>Databases</legend>
-    <p>Databases display options.</p>
-<table class="pma-table" width="100%" cellspacing="0">
-<tr><th><label for="NavigationTreeDisplayDbFilterMinimum">Minimum number of databases to display the database filter box</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeDisplayDbFilterMinimum" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span></th><td><input type="number" name="NavigationTreeDisplayDbFilterMinimum" id="NavigationTreeDisplayDbFilterMinimum" value="30"><a class="restore-default hide" href="#NavigationTreeDisplayDbFilterMinimum" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeDbSeparator">Database tree separator</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeDbSeparator" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>String that separates databases into different tree levels.</small></th><td><input type="text" size="25" name="NavigationTreeDbSeparator" id="NavigationTreeDbSeparator" value="_"><a class="restore-default hide" href="#NavigationTreeDbSeparator" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr></table>
-</fieldset>
-<fieldset class="optbox" id="Navi_tables">
-<legend>Tables</legend>
-    <p>Tables display options.</p>
-<table class="pma-table" width="100%" cellspacing="0">
-<tr><th><label for="NavigationTreeDefaultTabTable">Target for quick access icon</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeDefaultTabTable" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span></th><td><select class="w-75" name="NavigationTreeDefaultTabTable" id="NavigationTreeDefaultTabTable"><option value="structure" selected="selected">Structure</option><option value="sql">SQL</option><option value="search">Search</option><option value="insert">Insert</option><option value="browse">Browse</option></select><a class="restore-default hide" href="#NavigationTreeDefaultTabTable" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeDefaultTabTable2">Target for second quick access icon</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeDefaultTabTable2" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span></th><td><select class="w-75" name="NavigationTreeDefaultTabTable2" id="NavigationTreeDefaultTabTable2"><option value="" selected="selected"></option><option value="structure">Structure</option><option value="sql">SQL</option><option value="search">Search</option><option value="insert">Insert</option><option value="browse">Browse</option></select><a class="restore-default hide" href="#NavigationTreeDefaultTabTable2" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeTableSeparator">Table tree separator</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeTableSeparator" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span><small>String that separates tables into different tree levels.</small></th><td><input type="text" size="25" name="NavigationTreeTableSeparator" id="NavigationTreeTableSeparator" value="__"><a class="restore-default hide" href="#NavigationTreeTableSeparator" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr><tr><th><label for="NavigationTreeTableLevel">Maximum table tree depth</label><span class="doc"><a href="./doc/html/config.html#cfg_NavigationTreeTableLevel" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a>
-</span></th><td><input type="number" name="NavigationTreeTableLevel" id="NavigationTreeTableLevel" value="1"><a class="restore-default hide" href="#NavigationTreeTableLevel" title="Restore default value"><img src="themes/dot.gif" title="" alt="" class="icon ic_s_reload"></a></td></tr></table>
-</fieldset>
-</div>
-</form>
-<script type="text/javascript">
-    if (typeof configInlineParams === 'undefined' || !Array.isArray(configInlineParams)) {
-        configInlineParams = [];
-    }
-    configInlineParams.push(function () {
-        registerFieldValidator('FirstLevelNavigationItems', 'validatePositiveNumber', true);
-registerFieldValidator('NavigationTreeDisplayItemFilterMinimum', 'validatePositiveNumber', true);
-registerFieldValidator('NumRecentTables', 'validateNonNegativeNumber', true);
-registerFieldValidator('NumFavoriteTables', 'validateNonNegativeNumber', true);
-registerFieldValidator('NavigationWidth', 'validateNonNegativeNumber', true);
-registerFieldValidator('MaxNavigationItems', 'validatePositiveNumber', true);
-registerFieldValidator('NavigationTreeTableLevel', 'validatePositiveNumber', true);
-$.extend(Messages, {
-	'error_nan_p': 'Not a positive number!',
-	'error_nan_nneg': 'Not a non-negative number!',
-	'error_incorrect_port': 'Not a valid port number!',
-	'error_invalid_value': 'Incorrect value!',
-	'error_value_lte': 'Value must be less than or equal to %s!'});
-$.extend(defaultValues, {
-	'ShowDatabasesNavigationAsTree': true,
-	'NavigationLinkWithMainPanel': true,
-	'NavigationDisplayLogo': true,
-	'NavigationLogoLink': 'index.php',
-	'NavigationLogoLinkWindow': ['main'],
-	'NavigationTreePointerEnable': true,
-	'FirstLevelNavigationItems': '100',
-	'NavigationTreeDisplayItemFilterMinimum': '30',
-	'NumRecentTables': '10',
-	'NumFavoriteTables': '10',
-	'NavigationWidth': '240',
-	'MaxNavigationItems': '50',
-	'NavigationTreeEnableGrouping': true,
-	'NavigationTreeEnableExpansion': true,
-	'NavigationTreeShowTables': true,
-	'NavigationTreeShowViews': true,
-	'NavigationTreeShowFunctions': true,
-	'NavigationTreeShowProcedures': true,
-	'NavigationTreeShowEvents': true,
-	'NavigationTreeAutoexpandSingleDb': true,
-	'NavigationDisplayServers': true,
-	'DisplayServersList': false,
-	'NavigationTreeDisplayDbFilterMinimum': '30',
-	'NavigationTreeDbSeparator': '_',
-	'NavigationTreeDefaultTabTable': ['structure'],
-	'NavigationTreeDefaultTabTable2': [''],
-	'NavigationTreeTableSeparator': '__',
-	'NavigationTreeTableLevel': '1'});
-    });
-    if (typeof configScriptLoaded !== 'undefined' && configInlineParams) {
-        loadInlineConfig();
-    }
-</script>
-</div></div>
-              </div>
-    </div>
+CREATE TABLE `predict` (
+  `id` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `_group` varchar(20) NOT NULL DEFAULT 'none',
+  `program` int(11) NOT NULL DEFAULT 0,
+  `comprog1` float NOT NULL DEFAULT 0,
+  `comprog2` float NOT NULL DEFAULT 0,
+  `intro_computing` float NOT NULL DEFAULT 0,
+  `IM` float NOT NULL DEFAULT 0,
+  `OOP` float NOT NULL DEFAULT 0,
+  `HCI` float NOT NULL DEFAULT 0,
+  `DSA` float NOT NULL DEFAULT 0,
+  `comprog1_units` float NOT NULL DEFAULT 0,
+  `comprog2_units` float NOT NULL DEFAULT 0,
+  `intro_computing_units` float NOT NULL DEFAULT 0,
+  `IM_units` float NOT NULL DEFAULT 0,
+  `OOP_units` float NOT NULL DEFAULT 0,
+  `HCI_units` float NOT NULL DEFAULT 0,
+  `DSA_units` float NOT NULL DEFAULT 0,
+  `programming_avg` float NOT NULL DEFAULT 0,
+  `gpa` float NOT NULL DEFAULT 0,
+  `ENFJ` int(11) NOT NULL DEFAULT 0,
+  `ENFP` int(11) NOT NULL DEFAULT 0,
+  `ENTJ` int(11) NOT NULL DEFAULT 0,
+  `ENTP` int(11) NOT NULL DEFAULT 0,
+  `ESFJ` int(11) NOT NULL DEFAULT 0,
+  `ESFP` int(11) NOT NULL DEFAULT 0,
+  `ESTJ` int(11) NOT NULL DEFAULT 0,
+  `ESTP` int(11) NOT NULL DEFAULT 0,
+  `INFJ` int(11) NOT NULL DEFAULT 0,
+  `INFP` int(11) NOT NULL DEFAULT 0,
+  `INTJ` int(11) NOT NULL DEFAULT 0,
+  `INTP` int(11) NOT NULL DEFAULT 0,
+  `ISFJ` int(11) NOT NULL DEFAULT 0,
+  `ISFP` int(11) NOT NULL DEFAULT 0,
+  `ISTJ` int(11) NOT NULL DEFAULT 0,
+  `ISTP` int(11) NOT NULL DEFAULT 0,
+  `EXISTENTIAL` int(11) NOT NULL DEFAULT 0,
+  `INTERPERSONAL` int(11) NOT NULL DEFAULT 0,
+  `INTRAPERSONAL` int(11) NOT NULL DEFAULT 0,
+  `KINESTHETIC` int(11) NOT NULL DEFAULT 0,
+  `LOGICAL` int(11) NOT NULL DEFAULT 0,
+  `MUSICAL` int(11) NOT NULL DEFAULT 0,
+  `NATURALISTIC` int(11) NOT NULL DEFAULT 0,
+  `VERBAL` int(11) NOT NULL DEFAULT 0,
+  `VISUAL` int(11) NOT NULL DEFAULT 0,
+  `MAIN_ROLE` int(11) NOT NULL DEFAULT 0,
+  `SECOND_ROLE` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-          <div class="pma_drop_handler">
-        Drop files here      </div>
-      <div class="pma_sql_import_status">
-        <h2>
-          SQL upload          ( <span class="pma_import_count">0</span> )
-          <span class="close">x</span>
-          <span class="minimize">-</span>
-        </h2>
-        <div></div>
-      </div>
-      </div>
+--
+-- Dumping data for table `predict`
+--
 
-  
-  
+INSERT INTO `predict` (`id`, `userID`, `_group`, `program`, `comprog1`, `comprog2`, `intro_computing`, `IM`, `OOP`, `HCI`, `DSA`, `comprog1_units`, `comprog2_units`, `intro_computing_units`, `IM_units`, `OOP_units`, `HCI_units`, `DSA_units`, `programming_avg`, `gpa`, `ENFJ`, `ENFP`, `ENTJ`, `ENTP`, `ESFJ`, `ESFP`, `ESTJ`, `ESTP`, `INFJ`, `INFP`, `INTJ`, `INTP`, `ISFJ`, `ISFP`, `ISTJ`, `ISTP`, `EXISTENTIAL`, `INTERPERSONAL`, `INTRAPERSONAL`, `KINESTHETIC`, `LOGICAL`, `MUSICAL`, `NATURALISTIC`, `VERBAL`, `VISUAL`, `MAIN_ROLE`, `SECOND_ROLE`) VALUES
+(46, 7, 'none', 0, 1, 1, 1.25, 1.25, 2.75, 2.5, 1.75, 4, 4, 3.75, 5, 11, 2.5, 7, 1.5, 1.55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 4),
+(47, 8, 'none', 0, 1.25, 1, 1.5, 1.25, 1.25, 1, 1.25, 5, 4, 4.5, 5, 5, 1, 5, 1.19, 1.23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1),
+(48, 9, 'none', 0, 1, 1, 1.5, 1.75, 2, 2.5, 1.25, 4, 4, 4.5, 7, 8, 2.5, 5, 1.44, 1.46, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1),
+(49, 10, 'none', 0, 1, 1, 1, 0, 1.25, 2.75, 1.5, 4, 4, 3, 7, 5, 2.75, 6, 1.25, 1.32, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0),
+(50, 11, 'none', 0, 1.25, 1.5, 1, 1.25, 1.5, 1, 1.5, 5, 6, 3, 5, 6, 1, 6, 1.38, 1.33, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0),
+(51, 12, 'none', 0, 1.5, 1.25, 1.25, 1.75, 2.5, 3, 3, 6, 5, 3.75, 7, 10, 3, 12, 1.75, 1.95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0),
+(52, 13, 'none', 0, 1.25, 1.25, 2.75, 1.25, 1, 2.5, 3, 5, 5, 8.25, 5, 4, 2.5, 12, 1.19, 1.74, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 2, 0),
+(53, 14, 'none', 0, 1.5, 1, 1.5, 1.75, 0, 1.75, 1.25, 6, 4, 4.5, 7, 11, 1.75, 5, 1.75, 1.64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1),
+(55, 16, 'none', 0, 1.25, 1.75, 1.25, 1.75, 1.25, 2, 1.25, 5, 7, 3.75, 7, 5, 2, 5, 1.5, 1.45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1),
+(59, 35, '3', 1, 1.5, 1, 1.5, 1.75, 2.5, 1.25, 1.25, 6, 4, 4.5, 7, 10, 1.25, 5, 1.69, 1.57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1),
+(60, 36, '4', 1, 2, 1.25, 1.5, 1.75, 2.25, 2.5, 1.25, 8, 5, 4.5, 7, 9, 2.5, 5, 1.81, 1.71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 2),
+(61, 37, '2', 1, 1.75, 2, 1.75, 1, 1, 1.5, 2.25, 7, 8, 5.25, 4, 4, 1.5, 9, 1.44, 1.61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 2),
+(62, 38, '3', 1, 1, 1.25, 1, 1.5, 2.75, 1.5, 1.25, 4, 5, 3, 6, 11, 1.5, 5, 1.62, 1.48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1),
+(63, 39, '1', 1, 1, 1.25, 1, 1.5, 1.25, 1.75, 1, 4, 5, 3, 6, 5, 1.75, 4, 1.25, 1.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1),
+(64, 40, '2', 1, 1, 1.5, 1.5, 0, 1.75, 1.25, 1.25, 4, 6, 4.5, 5, 7, 1.25, 5, 1.38, 1.36, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1),
+(65, 41, '1', 1, 1.75, 1.25, 1.25, 1, 1.25, 2.25, 1.25, 7, 5, 3.75, 4, 5, 2.25, 5, 1.31, 1.33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 2),
+(66, 42, '4', 1, 2.25, 1.5, 1.75, 2, 2.75, 1.5, 1.25, 9, 6, 5.25, 8, 11, 1.5, 5, 2.12, 1.91, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 4, 4),
+(67, 43, '4', 1, 1.5, 1.25, 1, 1.25, 1, 1.25, 1.5, 6, 5, 3, 5, 4, 1.25, 6, 1.25, 1.26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0),
+(68, 44, '1', 1, 1.25, 1, 1.25, 1.75, 1.25, 1.25, 1, 5, 4, 3.75, 7, 5, 1.25, 4, 1.31, 1.25, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1),
+(69, 45, '3', 1, 1.5, 2.25, 1, 1.25, 1.75, 1, 2.25, 6, 9, 3, 5, 7, 1, 9, 1.69, 1.67, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 2),
+(70, 46, '2', 1, 1.25, 1.25, 1.5, 1, 1.25, 1, 1.5, 5, 5, 4.5, 4, 5, 1, 6, 1.19, 1.27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0),
+(71, 47, '1', 1, 1.5, 1, 1.5, 1.25, 1.5, 1.25, 1, 6, 4, 4.5, 5, 6, 1.25, 4, 1.31, 1.28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1),
+(72, 48, '2', 1, 1.25, 1.25, 1.5, 1, 2.25, 1.5, 1, 5, 5, 4.5, 4, 9, 1.5, 4, 1.44, 1.38, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1),
+(73, 49, '3', 1, 1, 1.25, 1.25, 1.5, 1, 1.5, 1.75, 4, 5, 3.75, 6, 4, 1.5, 7, 1.19, 1.3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0),
+(75, 66, '2', 1, 1.5, 2, 1.5, 1.25, 1.25, 2.75, 1.75, 6, 8, 4.5, 5, 5, 2.75, 7, 1.5, 1.59, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 5),
+(80, 71, '4', 1, 1.5, 1.5, 1.75, 1.5, 2.75, 2, 1.75, 6, 6, 5.25, 6, 11, 2, 7, 1.81, 1.8, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 5),
+(107, 70, '2', 1, 1.75, 1, 2.75, 2, 1.5, 1.5, 1.5, 7, 4, 8.25, 8, 6, 1.5, 6, 1.56, 1.7, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4),
+(114, 73, '4', 1, 2.5, 1.25, 3, 1.25, 2.75, 1.5, 2, 10, 5, 9, 5, 11, 1.5, 8, 1.94, 2.06, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 4),
+(115, 79, 'none', 1, 1.5, 2, 2.25, 2, 1.75, 1.5, 1.25, 6, 8, 6.75, 8, 7, 1.5, 5, 1.81, 1.76, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 4),
+(116, 81, 'none', 0, 1.5, 1.5, 2.25, 1.5, 1.5, 2.75, 2, 6, 6, 6.75, 6, 6, 2.75, 8, 1.5, 1.73, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 2, 5),
+(118, 83, '3', 1, 1.25, 1.25, 2.5, 2.25, 2.25, 2.5, 1.75, 5, 5, 7.5, 9, 9, 2.5, 7, 1.75, 1.88, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(155, 89, 'none', 1, 1.75, 2.5, 3, 1.5, 1, 1, 1.25, 7, 10, 9, 6, 4, 1, 5, 1.69, 1.75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 5),
+(156, 91, 'none', 1, 1, 1.25, 1.25, 1.5, 1.75, 1.75, 1.25, 4, 5, 3.75, 6, 7, 1.75, 5, 1.38, 1.35, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1),
+(157, 92, 'none', 1, 1.25, 1.25, 1, 1, 1, 1, 1.75, 5, 5, 3, 4, 4, 1, 7, 1.12, 1.21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
+(158, 94, 'none', 1, 1.25, 1.5, 1.5, 1.5, 1.5, 2.25, 2, 5, 6, 4.5, 6, 6, 2.25, 8, 1.44, 1.57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1),
+(159, 93, 'none', 1, 2.25, 1, 1.25, 1.25, 1, 2.25, 1.25, 9, 4, 3.75, 5, 4, 2.25, 5, 1.38, 1.38, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2),
+(160, 95, 'none', 0, 1.25, 1.25, 1.5, 1.5, 1.5, 2.5, 1.75, 5, 5, 4.5, 6, 6, 2.5, 7, 1.38, 1.5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1),
+(161, 96, 'none', 0, 2.25, 2, 1.75, 1.5, 1.5, 2, 1.75, 9, 8, 5.25, 6, 6, 2, 7, 1.81, 1.8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 4),
+(162, 97, 'none', 0, 1.5, 1.5, 1.75, 1.5, 1.25, 1.75, 1.5, 6, 6, 5.25, 6, 5, 1.75, 6, 1.44, 1.5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1),
+(163, 98, 'none', 0, 1.75, 1.25, 1.5, 1.25, 1.25, 1, 1.5, 7, 5, 4.5, 5, 5, 1, 6, 1.38, 1.4, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 2),
+(166, 88, '1', 1, 1.25, 1.5, 1.25, 1.5, 1.25, 2.25, 1.75, 5, 6, 3.75, 6, 5, 2.25, 7, 1.38, 1.46, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1),
+(177, 101, 'none', 1, 1.25, 1.25, 1.5, 2, 1.5, 2, 1.25, 5, 5, 4.5, 8, 6, 2, 5, 1.5, 1.48, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1);
 
-  
-      <noscript>
-      <div class="alert alert-danger" role="alert">
-  <img src="themes/dot.gif" title="" alt="" class="icon ic_s_error"> Javascript must be enabled past this point!
-</div>
+-- --------------------------------------------------------
 
-    </noscript>
-  
-      <div id="floating_menubar"></div>
-<nav id="server-breadcrumb" aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <img src="themes/dot.gif" title="" alt="" class="icon ic_s_host">
-      <a href="index.php?route=/" data-raw-text="127.0.0.1">
-        Server:        127.0.0.1
-      </a>
-    </li>
+--
+-- Table structure for table `users`
+--
 
-      </ol>
-</nav>
-<div id="topmenucontainer" class="menucontainer">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-label="Toggle navigation" aria-controls="navbarNav" aria-expanded="false">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul id="topmenu" class="navbar-nav">
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/databases">
-              <img src="themes/dot.gif" title="Databases" alt="Databases" class="icon ic_s_db">&nbsp;Databases
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/sql">
-              <img src="themes/dot.gif" title="SQL" alt="SQL" class="icon ic_b_sql">&nbsp;SQL
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/status">
-              <img src="themes/dot.gif" title="Status" alt="Status" class="icon ic_s_status">&nbsp;Status
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/privileges&viewing_mode=server">
-              <img src="themes/dot.gif" title="User accounts" alt="User accounts" class="icon ic_s_rights">&nbsp;User accounts
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/export">
-              <img src="themes/dot.gif" title="Export" alt="Export" class="icon ic_b_export">&nbsp;Export
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/import">
-              <img src="themes/dot.gif" title="Import" alt="Import" class="icon ic_b_import">&nbsp;Import
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/preferences/manage">
-              <img src="themes/dot.gif" title="Settings" alt="Settings" class="icon ic_b_tblops">&nbsp;Settings
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/replication">
-              <img src="themes/dot.gif" title="Replication" alt="Replication" class="icon ic_s_replication">&nbsp;Replication
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/variables">
-              <img src="themes/dot.gif" title="Variables" alt="Variables" class="icon ic_s_vars">&nbsp;Variables
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/collations">
-              <img src="themes/dot.gif" title="Charsets" alt="Charsets" class="icon ic_s_asci">&nbsp;Charsets
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/engines">
-              <img src="themes/dot.gif" title="Engines" alt="Engines" class="icon ic_b_engine">&nbsp;Engines
-                          </a>
-          </li>
-                  <li class="nav-item">
-            <a class="nav-link text-nowrap" href="index.php?route=/server/plugins">
-              <img src="themes/dot.gif" title="Plugins" alt="Plugins" class="icon ic_b_plugin">&nbsp;Plugins
-                          </a>
-          </li>
-              </ul>
-    </div>
-  </nav>
-</div>
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `AY` varchar(20) NOT NULL,
+  `userType` varchar(50) NOT NULL,
+  `firstName` varchar(100) NOT NULL,
+  `lastName` varchar(100) NOT NULL,
+  `email` varchar(200) NOT NULL,
+  `password` varchar(500) NOT NULL,
+  `section` varchar(50) NOT NULL DEFAULT 'none',
+  `program` varchar(50) NOT NULL DEFAULT 'none'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-    <span id="page_nav_icons">
-      <span id="lock_page_icon"></span>
-      <span id="page_settings_icon">
-        <img src="themes/dot.gif" title="Page-related settings" alt="Page-related settings" class="icon ic_s_cog">
-      </span>
-      <a id="goto_pagetop" href="#"><img src="themes/dot.gif" title="Click on the bar to scroll to top of page" alt="Click on the bar to scroll to top of page" class="icon ic_s_top"></a>
-    </span>
-  
-  <div id="pma_console_container">
-    <div id="pma_console">
-                <div class="toolbar collapsed">
-                    <div class="switch_button console_switch">
-            <img src="themes/dot.gif" title="SQL Query Console" alt="SQL Query Console" class="icon ic_console">
-            <span>Console</span>
-        </div>
-                            <div class="button clear">
-            
-            <span>Clear</span>
-        </div>
-                            <div class="button history">
-            
-            <span>History</span>
-        </div>
-                            <div class="button options">
-            
-            <span>Options</span>
-        </div>
-                            <div class="button bookmarks">
-            
-            <span>Bookmarks</span>
-        </div>
-                            <div class="button debug hide">
-            
-            <span>Debug SQL</span>
-        </div>
-            </div>
-                <div class="content">
-            <div class="console_message_container">
-                <div class="message welcome">
-                    <span id="instructions-0">
-                        Press Ctrl+Enter to execute query                    </span>
-                    <span class="hide" id="instructions-1">
-                        Press Enter to execute query                    </span>
-                </div>
-                                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide select"
-                            targetdb="thesis_db" targettable="users">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">SELECT * FROM `users`</span>
-                        </div>
-                                            <div class="message history collapsed hide select"
-                            targetdb="thesis_db" targettable="users">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">SELECT * FROM `users`</span>
-                        </div>
-                                            <div class="message history collapsed hide select"
-                            targetdb="thesis_db" targettable="users">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">SELECT * FROM `users` ORDER BY `id`  ASC </span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                            <div class="message history collapsed hide"
-                            targetdb="thesis_db" targettable="">
-                            <div class="action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span>thesis_db</span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span>During current session</span>
-                    </span>
-            </div>
-                            <span class="query">UPDATE predict SET predict._group = &#039;none&#039; WHERE predict.program = &#039;1&#039;;</span>
-                        </div>
-                                                </div><!-- console_message_container -->
-            <div class="query_input">
-                <span class="console_query_input"></span>
-            </div>
-        </div><!-- message end -->
-                <div class="mid_layer"></div>
-                <div class="card" id="debug_console">
-            <div class="toolbar ">
-                    <div class="button order order_asc">
-            
-            <span>ascending</span>
-        </div>
-                            <div class="button order order_desc">
-            
-            <span>descending</span>
-        </div>
-                            <div class="text">
-            
-            <span>Order:</span>
-        </div>
-                            <div class="switch_button">
-            
-            <span>Debug SQL</span>
-        </div>
-                            <div class="button order_by sort_count">
-            
-            <span>Count</span>
-        </div>
-                            <div class="button order_by sort_exec">
-            
-            <span>Execution order</span>
-        </div>
-                            <div class="button order_by sort_time">
-            
-            <span>Time taken</span>
-        </div>
-                            <div class="text">
-            
-            <span>Order by:</span>
-        </div>
-                            <div class="button group_queries">
-            
-            <span>Group queries</span>
-        </div>
-                            <div class="button ungroup_queries">
-            
-            <span>Ungroup queries</span>
-        </div>
-            </div>
-            <div class="content debug">
-                <div class="message welcome"></div>
-                <div class="debugLog"></div>
-            </div> <!-- Content -->
-            <div class="templates">
-                <div class="debug_query action_content">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action dbg_show_trace">
-            Show trace
-                    </span>
-                            <span class="action dbg_hide_trace">
-            Hide trace
-                    </span>
-                            <span class="text count hide">
-            Count
-                    </span>
-                            <span class="text time">
-            Time taken
-                    </span>
-            </div>
-            </div> <!-- Template -->
-        </div> <!-- Debug SQL card -->
-                    <div class="card" id="pma_bookmarks">
-                <div class="toolbar ">
-                    <div class="switch_button">
-            
-            <span>Bookmarks</span>
-        </div>
-                            <div class="button refresh">
-            
-            <span>Refresh</span>
-        </div>
-                            <div class="button add">
-            
-            <span>Add</span>
-        </div>
-            </div>
-                <div class="content bookmark">
-                    <div class="message welcome">
-    <span>No bookmarks</span>
-</div>
+--
+-- Dumping data for table `users`
+--
 
-                </div>
-                <div class="mid_layer"></div>
-                <div class="card add">
-                    <div class="toolbar ">
-                    <div class="switch_button">
-            
-            <span>Add bookmark</span>
-        </div>
-            </div>
-                    <div class="content add_bookmark">
-                        <div class="options">
-                            <label>
-                                Label: <input type="text" name="label">
-                            </label>
-                            <label>
-                                Target database: <input type="text" name="targetdb">
-                            </label>
-                            <label>
-                                <input type="checkbox" name="shared">Share this bookmark                            </label>
-                            <button class="btn btn-primary" type="submit" name="submit">OK</button>
-                        </div> <!-- options -->
-                        <div class="query_input">
-                            <span class="bookmark_add_input"></span>
-                        </div>
-                    </div>
-                </div> <!-- Add bookmark card -->
-            </div> <!-- Bookmarks card -->
-                        <div class="card" id="pma_console_options">
-            <div class="toolbar ">
-                    <div class="switch_button">
-            
-            <span>Options</span>
-        </div>
-                            <div class="button default">
-            
-            <span>Set default</span>
-        </div>
-            </div>
-            <div class="content">
-                <label>
-                    <input type="checkbox" name="always_expand">Always expand query messages                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="start_history">Show query history at start                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="current_query">Show current browsing query                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="enter_executes">
-                        Execute queries on Enter and insert new line with Shift + Enter. To make this permanent, view settings.                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="dark_theme">Switch to dark theme                </label>
-                <br>
-            </div>
-        </div> <!-- Options card -->
-        <div class="templates">
-                        <div class="query_actions">
-                    <span class="action collapse">
-            Collapse
-                    </span>
-                            <span class="action expand">
-            Expand
-                    </span>
-                            <span class="action requery">
-            Requery
-                    </span>
-                            <span class="action edit">
-            Edit
-                    </span>
-                            <span class="action explain">
-            Explain
-                    </span>
-                            <span class="action profiling">
-            Profiling
-                    </span>
-                            <span class="action bookmark">
-            Bookmark
-                    </span>
-                            <span class="text failed">
-            Query failed
-                    </span>
-                            <span class="text targetdb">
-            Database
-                            : <span></span>
-                    </span>
-                            <span class="text query_time">
-            Queried time
-                            : <span></span>
-                    </span>
-            </div>
-        </div>
-    </div> <!-- #console end -->
-</div> <!-- #console_container end -->
+INSERT INTO `users` (`id`, `AY`, `userType`, `firstName`, `lastName`, `email`, `password`, `section`, `program`) VALUES
+(1, '2022-2023', 'student', 'mark angelo', 'panaguiton', 'drenegades19@gmail.com', 'test', '3A', 'BSIT'),
+(2, '2022-2023', 'student', 'markie', 'panaguitonnie', 'glau@gmail.com', 'test', '3A', 'BSCS'),
+(3, '2022-2023', 'teacher', 'jaydee', 'ballaho', 'jaydee.ballaho@gmail.com', 'test', 'none', 'none'),
+(4, '2022-2023', 'student', 'ilona', 'saiper', 'it1@gmail.com', 'test', '3A', 'BSIT'),
+(5, '2022-2023', 'teacher', 'teacher2', 'teacher2', 'teacher2@gmail.com', 'test', 'none', 'none'),
+(6, '2022-2023', 'student', 'lousi', 'perois', 'it2@gmail.com', 'test', '3A', 'BSIT'),
+(7, '2022-2023', 'student', 'santa', 'maria', 'it3@gmail.com', 'test', '3A', 'BSIT'),
+(8, '2022-2023', 'student', 'viton', 'leser', 'it4@gmail.com', 'test', '3A', 'BSIT'),
+(9, '2022-2023', 'student', 'marky', 'hemie', 'it5@gmail.com', 'test', '3A', 'BSIT'),
+(10, '2022-2023', 'student', 'homie', 'kouies', 'it6@gmail.com', 'test', '3A', 'BSIT'),
+(11, '2022-2023', 'student', 'jungkook', 'jeon', 'it7@gmail.com', 'test', '3A', 'BSIT'),
+(12, '2022-2023', 'student', 'jimin', 'park', 'it8@gmail.com', 'test', '3A', 'BSIT'),
+(13, '2022-2023', 'student', 'taeyhung', 'kim', 'it9@gmail.com', 'test', '3A', 'BSIT'),
+(14, '2022-2023', 'student', 'alurz', 'luryaws', 'it10@gmail.com', 'test', '3A', 'BSIT'),
+(15, '2022-2023', 'student', 'derald', 'galon', 'it11@gmail.com', 'test', '3A', 'BSIT'),
+(16, '2022-2023', 'student', 'john paul', 'madronal', 'it12@gmail.com', 'test', '3A', 'BSIT'),
+(17, '2022-2023', 'student', 'katty', 'perry', 'it13@gmail.com', 'test', '3A', 'BSIT'),
+(18, '2022-2023', 'student', 'zues', 'heaven', 'it14@gmail.com', 'test', '3A', 'BSIT'),
+(19, '2022-2023', 'student', 'joseph', 'mayorcruz', 'it15@gmail.com', 'test', '3A', 'BSIT'),
+(35, '2022-2023', 'student', 'pedro', 'kalas', 'cs1@gmail.com', 'test', '3A', 'BSCS'),
+(36, '2022-2023', 'student', 'sheila', 'gaspar', 'cs2@gmail.com', 'test', '3A', 'BSCS'),
+(37, '2022-2023', 'student', 'edgardo', 'despalo', 'cs3@gmail.com', 'test', '3A', 'BSCS'),
+(38, '2022-2023', 'student', 'anthony', 'panaguiton', 'cs4@gmail.com', 'test', '3A', 'BSCS'),
+(39, '2022-2023', 'student', 'evelyn', 'santos', 'cs5@gmail.com', 'test', '3A', 'BSCS'),
+(40, '2022-2023', 'student', 'tacy', 'casimirs', 'cs6@gmail.com', 'test', '3A', 'BSCS'),
+(41, '2022-2023', 'student', 'bogards', 'despalo', 'cs7@gmail.com', 'test', '3A', 'BSCS'),
+(42, '2022-2023', 'student', 'moheir', 'mohamdsa', 'cs8@gmail.com', 'test', '3A', 'BSCS'),
+(43, '2022-2023', 'student', 'sheila', 'despalo', 'cs9@gmail.com', 'test', '3A', 'BSCS'),
+(44, '2022-2023', 'student', 'oloes', 'grijaldo', 'cs10@gmail.com', 'test', '3A', 'BSCS'),
+(45, '2022-2023', 'student', 'budin', 'allimbulo', 'cs11@gmail.com', 'test', '3A', 'BSCS'),
+(46, '2022-2023', 'student', 'marikiet', 'akies', 'cs12@gmail.com', 'test', '3A', 'BSCS'),
+(47, '2022-2023', 'student', 'boots', 'jagger', 'cs13@gmail.com', 'test', '3A', 'BSCS'),
+(48, '2022-2023', 'student', 'mories', 'amon', 'cs14@gmail.com', 'test', '3A', 'BSCS'),
+(49, '2022-2023', 'student', 'katrina', 'velarde', 'cs15@gmail.com', 'test', '3A', 'BSCS'),
+(66, '2022-2023', 'student', 'pauline', 'degala', 'cs16@gmail.com', 'test', '3A', 'BSCS'),
+(70, '2022-2023', 'student', 'Rica', 'Mayormita', 'rica@gmail.com', 'test', '3A', 'BSCS'),
+(71, '2022-2023', 'student', 'Warlock', 'Hasent', 'try_again@gmail.com', 'test', '3A', 'BSCS'),
+(73, '2022-2023', 'student', 'weqe', 'wqeqw', 'ewqeq@gmail.com', 'dadas', '3A', 'BSCS'),
+(76, '2022-2023', 'teacher', 'teacher1', 'teacher1', 'teacher1@gmail.com', 'test', 'none', 'none'),
+(79, '2022-2023', 'student', 'general', 'juan luna', 'luna2@gmail.com', 'test', '3B', 'BSCS'),
+(80, '2022-2023', 'teacher', 'clockwerk', 'timeless', 'clockwerk@gmail.com', 'test', 'none', 'none'),
+(81, '2022-2023', 'student', 'lina', 'laguna', 'lina@gmail.com', 'test', '3B', 'BSIT'),
+(82, '2022-2023', 'teacher', 'teacher_test', 'teacher_test', 'teacher_test@gmail.com', 'test', 'none', 'none'),
+(83, '2022-2023', 'student', 'student_test', 'student_test', 'student_test@gmail.com', 'test', '3A', 'BSCS'),
+(87, '2022-2023', 'teacher', 'jaydee', 'ballaho', 'jaydee_ballaho@gmail.com', '$5$rounds=535000$gyB17RPtpR0f0ira$vMjldqU3kBRhr8rzUT763gXkDXwbEFa4LgGPzXvTYIA', 'none', 'none'),
+(88, '2022-2023', 'student', 'mark angelo', 'panaguiton', 'mark_angelo17@gmail.com', '$5$rounds=535000$QZ7bqxiLu4M6Kdhl$/NPhvgiSEeMlfn72.ZPVX8ndWpaYUf8tAAjYNwldN/D', '3A', 'BSCS'),
+(89, '2022-2023', 'student', 'mark1', 'mark1', 'mark1@gmail.com', '$5$rounds=535000$P3P/3hreqRiNa8rf$Rc4/yPXb2jG5aQL7ywDAgKHEjZ/VOix0e6JgnleREi/', '3B', 'BSCS'),
+(90, '2022-2023', 'teacher', 'jaydee1', 'jaydee1', 'jaydee1@gmail.com', '$5$rounds=535000$jM2aCHtn8HM9Ce.5$d/7TAD7pQ9aMzdK68Sy347aEwh3CVwFb5q7fVmmuic6', 'none', 'none'),
+(91, '2022-2023', 'student', 'leonard', 'aquino', 'leo@gmail.com', '$5$rounds=535000$d.dg/snryU1urwnZ$YLuOhjFAhv0FmuTz1BM.V0c4BIDXc6kMBDzR1sJVqv1', '3B', 'BSCS'),
+(92, '2022-2023', 'student', 'fred', 'fred', 'fred@gmail.com', '$5$rounds=535000$yCsmh1cXAdWiW2wU$M8cD4ytrv.FNpsISLkWZcmNW6DTCPe3o9b21NLBObI/', '3B', 'BSCS'),
+(93, '2022-2023', 'student', 'laulau', 'laulau', 'laulau@gmail.com', '$5$rounds=535000$IrJayZnUZpj0cIoE$w7C28zx1ist/JBrkhrAEN1U2fvOvLB0UOY35p6N7I5B', '3B', 'BSCS'),
+(94, '2022-2023', 'student', 'paupau', 'paupau', 'paupau@gmail.com', '$5$rounds=535000$SnFESZG7hKaV8i1D$BScwbvnYGlnx0W.Pxf9FzvigDQ.YcI9g0pZMy0rFwG2', '3B', 'BSCS'),
+(95, '2022-2023', 'student', 'jopay', 'jopay', 'jopay@gmail.com', '$5$rounds=535000$3u0ivolUrGVpYziN$abFfM0jGVE1NQu52M5RTJ/hcWjrYpVU/7ZAjTK/MQN.', '3A', 'BSIT'),
+(96, '2022-2023', 'student', 'alcohol', 'alcohol', 'alcohol@gmail.com', '$5$rounds=535000$5GkKhe6433WW7IZL$gAj8ktAR1PMNwtnpTh7qydwnloSwVADQDFZoAnQnO34', '3A', 'BSIT'),
+(97, '2022-2023', 'student', 'abyss', 'abyss', 'abyss@gmail.com', '$5$rounds=535000$4CRsIkITZ/WgoKxV$lIpS1vvALdfBuNRv1lUPszhl5d6oihTyBsxrWOzLjP7', '3A', 'BSIT'),
+(98, '2022-2023', 'student', 'julian', 'julian', 'julian@gmail.com', '$5$rounds=535000$5bbsVk.n/qL8yzQ6$Uth9qv8SiusGsNdYZ/CH2HlVfbr7tEQlE1UaWUcpSSA', '3A', 'BSIT'),
+(99, '2022-2023', 'student', 'diana', 'diana', 'diana@gmail.com', '$5$rounds=535000$4x0NtmOj8KZuu/wq$lOSQGPmky8vXiizz6CeSCKGgFvfIhO0uZZClg0MrLL5', '3A', 'BSCS'),
+(100, '2022-2023', 'teacher', 'pipay', 'pipay', 'pipay@gmail.com', '$5$rounds=535000$dPaFvY0DqVHgwnLv$Hkxm57uzNpYeadGTXctys5cttrVXn5L93tXeE.TiB0D', 'none', 'none'),
+(101, '2022-2023', 'student', 'jungkook1', 'park1', 'jungkook1@gmail.com', '$5$rounds=535000$mVAi24BKXNLSNicR$.qVLiBu0tpIO0nfkZKVkHewAYa8xwqBq9t23rtDMY7B', '3A', 'BSCS'),
+(102, '2022-2023', 'teacher', 'jimin', 'jeon', 'jimin@gmail.com', '$5$rounds=535000$A/Rmts6nxN.hA1fv$rbwylYNTtPW7wPqiYztn92xw4D.Z.ihYLbR3hdCyPC7', 'none', 'none');
 
+--
+-- Indexes for dumped tables
+--
 
-  <div id="page_content">
-    
+--
+-- Indexes for table `predict`
+--
+ALTER TABLE `predict`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_user_id` (`userID`);
 
-    
-<!DOCTYPE HTML>
-<html lang="en" dir="ltr">
-<head>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <title>phpMyAdmin</title>
-    <meta charset="utf-8">
-    <style type="text/css">
-        html {
-            padding: 0;
-            margin: 0;
-        }
-        body  {
-            font-family: sans-serif;
-            font-size: small;
-            color: #000000;
-            background-color: #F5F5F5;
-            margin: 1em;
-        }
-        h1 {
-            margin: 0;
-            padding: 0.3em;
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #ffffff;
-            background-color: #ff0000;
-        }
-        p {
-            margin: 0;
-            padding: 0.5em;
-            border: 0.1em solid red;
-            background-color: #ffeeee;
-        }
-    </style>
-</head>
-<body>
-<h1>phpMyAdmin - Error</h1>
-<p>index.php: Missing parameter: what<a href="./doc/html/faq.html#faqmissingparameters" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a><br>index.php: Missing parameter: export_type<a href="./doc/html/faq.html#faqmissingparameters" target="documentation"><img src="themes/dot.gif" title="Documentation" alt="Documentation" class="icon ic_b_help"></a><br></p>
-</body>
-</html>
-  </div>
-  <div id="selflink" class="print_ignore"><a href="index.php?route=%2Fexport&amp;server=1" title="Open new phpMyAdmin window" target="_blank" rel="noopener noreferrer"><img src="themes/dot.gif" title="Open new phpMyAdmin window" alt="Open new phpMyAdmin window" class="icon ic_window-new"></a></div>
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `email_2` (`email`);
 
-  <div class="clearfloat" id="pma_errors">
-    
-  </div>
+--
+-- AUTO_INCREMENT for dumped tables
+--
 
-  
-<script data-cfasync="false" type="text/javascript">
-// <![CDATA[
-var debugSQLInfo = 'null';
+--
+-- AUTO_INCREMENT for table `predict`
+--
+ALTER TABLE `predict`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
 
-// ]]>
-</script>
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
+--
+-- Constraints for dumped tables
+--
 
-  
-  
-  </body>
-</html>
+--
+-- Constraints for table `predict`
+--
+ALTER TABLE `predict`
+  ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`userID`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
